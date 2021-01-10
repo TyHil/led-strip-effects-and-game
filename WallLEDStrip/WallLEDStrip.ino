@@ -1,7 +1,9 @@
 /*
-  Wall individually addressable RGB strip control with white light (with blue light
-  adjustment), RGB rainbow effect, and strobe effect as well as a joystick controlled
-  game. The strobe syncs with the desk light code through a laser sensor.
+  Wall mounted WS2812B LED strip control with white light (with blue light adjustment),
+  RGB rainbow effect, and strobe effect that syncs with the desk light code through a
+  laser sensor. There is also a joystick controlled game in which the player, a green
+  pixel that can shoot a couple pixels ahead of itself, moves from the beginning of the
+  strip to the end through an ever growing field of enemies as the game progresses.
   Written by Tyler Hill
   Version 2.0
   Note: Neopixels doesn't have dynamic brightness

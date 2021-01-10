@@ -1,7 +1,7 @@
 /*
-  Desk light individually addressable RGB strip control with white light (with blue
-  light adjustment), RGB rainbow effect, and strobe effect that syncs with the wall code
-  by sending laser pulses.
+  Desk light WS2812B LED strip control with white light (with blue light adjustment),
+  RGB rainbow effect, and strobe effect that syncs with the wall code by sending laser
+  pulses.
   Written by Tyler Hill
   Version 2.0
   Remote Codes:

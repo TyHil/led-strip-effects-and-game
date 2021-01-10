@@ -1,6 +1,6 @@
 /*
-  Head lamp individually addressable RGB strip control with white light (with blue light
-  adjustment), RGB rainbow effect, and strobe effect.
+  Headlamp WS2812B LED strip control with white light (with blue light adjustment), RGB
+  rainbow effect, and strobe effect.
   Written by Tyler Hill
   Version 2.0
   Remote Codes:
