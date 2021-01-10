@@ -15,8 +15,28 @@ Desk Light | ✓ | ✓ | ✓ | ✓ | Sender | X
 Headlamp | ✓ | ✓ | ✓ | ✓ | X | X
 ## Photos
 ### Wall
+#### Rainbow
+<p align="center">
+  <img alt="Rainbow 1" src="Photos/20210109_220554.jpg" width="300"/> <img alt="Rainbow 2" src="Photos/20210109_220656.jpg" width="300"/> <img alt="Rainbow 3" src="Photos/20210109_220637.jpg" width="300"/>
+</p>
+
+#### Game
+<p align="center">
+  <img alt="Gameplay frame" src="Photos/20210109_221558.jpg" width="400"/> <img alt="Gameplay death gif" src="Photos/20210109_223620-ANIMATION.gif" width="400"/>
+</p>
 
 ### Desk Light
+#### White
+![White desk light](Photos/20210109_220829.jpg)
+#### Rainbow
+<p align="center">
+  <img alt="Rainbow 1" src="Photos/20210109_220821.jpg" width="300"/> <img alt="Rainbow 2" src="Photos/20210109_220819.jpg" width="300"/> <img alt="Rainbow 3" src="Photos/20210109_220806.jpg" width="300"/>
+</p>
+
+#### Strobe
+<p align="center">
+  <img alt="Strobe 1" src="Photos/20210109_220853_011.jpg" width="200"/> <img alt="Strobe 2" src="Photos/20210109_220853_015.jpg" width="200"/> <img alt="Strobe 3" src="Photos/20210109_220853_008.jpg" width="200"/> <img alt="Strobe gif" src="Photos/20210109_223810-ANIMATION.gif" width="200"/>
+</p>
 
 ### Headlamp
 
