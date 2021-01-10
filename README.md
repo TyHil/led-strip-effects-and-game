@@ -19,7 +19,7 @@ Headlamp | ✓ | ✓ | ✓ | ✓ | X | X
 <img alt="Rainbow 1" src="Photos/20210109_220554.jpg" width="300"/> <img alt="Rainbow 2" src="Photos/20210109_220656.jpg" width="300"/> <img alt="Rainbow 3" src="Photos/20210109_220637.jpg" width="300"/>
 
 #### Game
-<img alt="Gameplay frame" src="Photos/20210109_221558.jpg" width="400"/> <img alt="Gameplay death gif" src="Photos/20210109_223620-ANIMATION.gif" width="400"/>
+<img alt="Gameplay shooting gif" src="Photos/20210110_120858-ANIMATION.gif" width="400"/> <img alt="Gameplay death gif" src="Photos/20210109_223620-ANIMATION.gif" width="400"/>
 
 #### Electronics
 <img alt="Electronics" src="Photos/20210109_231937.jpg" width="500"/>
