@@ -17,25 +17,35 @@ Headlamp | ✓ | ✓ | ✓ | ✓ | X | X
 ### Wall
 #### Rainbow
 <img alt="Rainbow 1" src="Photos/20210109_220554.jpg" width="300"/> <img alt="Rainbow 2" src="Photos/20210109_220656.jpg" width="300"/> <img alt="Rainbow 3" src="Photos/20210109_220637.jpg" width="300"/>
+
 #### Game
 <img alt="Gameplay frame" src="Photos/20210109_221558.jpg" width="400"/> <img alt="Gameplay death gif" src="Photos/20210109_223620-ANIMATION.gif" width="400"/>
+
 #### Electronics
 <img alt="Electronics" src="Photos/20210109_231937.jpg" width="500"/>
+
 ### Desk Light
 #### White
 <img alt="White" src="Photos/20210109_220829.jpg" width="500"/>
+
 #### Rainbow
 <img alt="Rainbow 1" src="Photos/20210109_220821.jpg" width="300"/> <img alt="Rainbow 2" src="Photos/20210109_220819.jpg" width="300"/> <img alt="Rainbow 3" src="Photos/20210109_220806.jpg" width="300"/>
+
 #### Strobe
 <img alt="Strobe 1" src="Photos/20210109_220853_011.jpg" width="200"/> <img alt="Strobe 2" src="Photos/20210109_220853_015.jpg" width="200"/> <img alt="Strobe 3" src="Photos/20210109_220853_008.jpg" width="200"/> <img alt="Strobe gif" src="Photos/20210109_223810-ANIMATION.gif" width="200"/>
+
 #### Electronics
 <img alt="Electronics" src="Photos/20210109_231809.jpg" width="500"/>
+
 ### Headlamp
 #### White
 <img alt="White" src="Photos/20210109_231625.jpg" width="500"/>
+
 #### Rainbow
 <img alt="Rainbow 1" src="Photos/20210109_231645.jpg" width="500"/>
+
 #### Electronics
 <img alt="Electronics" src="Photos/20210109_231610.jpg" width="500"/>
+
 ## License
 GPL-3.0 License
