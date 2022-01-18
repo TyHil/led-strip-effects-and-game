@@ -13,6 +13,8 @@ Files | White | Blue Light | Rainbow | Strobe | Sync | Game
 Wall | ✓ | ✓ | ✓ | ✓ | Reciever | ✓
 Desk Light | ✓ | ✓ | ✓ | ✓ | Sender | X
 Headlamp | ✓ | ✓ | ✓ | ✓ | X | X
+### Power
+[Each RGB LED draws approximately 50 mA when it is set to full brightness and powered at 5V.](https://www.pololu.com/product/2547#:~:text=Each%20RGB%20LED%20draws%20approximately%2050%C2%A0mA%20when%20it%20is%20set%20to%20full%20brightness%20and%20powered%20at%205%C2%A0V.)
 ## Photos
 ### Wall
 #### Rainbow
