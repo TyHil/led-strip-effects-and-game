@@ -15,7 +15,8 @@
 #define YPin A3
 #define XPin A2
 #define SWPin 4
-#define Mid 161
+#define TopMid 121
+#define BottomMid 275
 CRGB leds[NumLeds];
 
 /*Wallpaper Vars*/
@@ -37,6 +38,8 @@ unsigned long timeEnemyMove; //how often enemies move
 unsigned long timeGeneral = 0; //time between shots in game and time between frames in wallpper
 int8_t diedEnemies = -1; //number of eneies (level) of last death
 int16_t diedPos = -1; //position of last death
+
+unsigned long timerSerial = 0;
 
 /*Wallpaper Functions*/
 
@@ -99,6 +102,9 @@ void adjustShotLength() { //shot lenght get bigger after a point
     shotLength = 3;
   }
 }
+int16_t mod(int16_t x, int16_t y) {
+  return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
+}
 void explosion(int start, CRGB color) { //generates an explosion at a point with a certain color
   /*CRGB colorList[51]; //code for a random color explsion
     for (int j = 0; j < 50; j++) colorList[j] = CRGB(random(0,255), random(0,255), random(0,255));
@@ -107,12 +113,14 @@ void explosion(int start, CRGB color) { //generates an explosion at a point with
   for (int j = 0; j < 50; j++) slopes[j] = (float)random(-2000, 2001) / 100; //higher slope higher speed
   slopes[50] = 0;
   for (int frame = 0; frame < 150; frame++) { //each frame puts a new x (time) value into the linear equations and gets a different y value (position)
-    if (frame < 80) for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame, 0.6))) + NumLeds - 1) + NumLeds - 1)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
-    for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame + 1, 0.6))) + NumLeds - 1) + NumLeds - 1)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
+    ///if (frame < 80) for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame, 0.6))) + NumLeds - 1) + NumLeds - 1)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
+    ///for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame + 1, 0.6))) + NumLeds - 1) + NumLeds - 1)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
+    if (frame < 80) for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame, 0.6)), NumLeds)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
+    for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame + 1, 0.6)), NumLeds)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
     FastLED.show();
     delay(20);
   }
-  for (uint16_t i = 0; i < 20; i++) { //fill empty spots between dots to create full green
+  /*///for (uint16_t i = 0; i < 20; i++) { //fill empty spots between dots to create full green
     for (int j = 0; j < 51; j++) {
       int16_t lightPos = abs(-abs(-abs((int16_t)(start + slopes[j] * pow(150, 0.6))) + NumLeds - 1) + NumLeds - 1);
       leds[min(max(lightPos + i, 0), NumLeds - 1)] = color;
@@ -120,7 +128,7 @@ void explosion(int start, CRGB color) { //generates an explosion at a point with
     }
     FastLED.show();
     delay(20);
-  }
+    }*/
 }
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
@@ -189,13 +197,15 @@ void start() { //reset game
 }
 
 void setup() {
-  //Serial.begin(9600); //Serial.println("");
   FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
+  FastLED.clear();
+  FastLED.show();
+  Serial.begin(9600); //Serial.println("");
   byte *c;
-  for (uint8_t i = 0; i <= Mid; i++) { //set first rainbow frame
-    c = Wheel((((uint16_t)i * 256 / NumLeds)) & 255);
-    leds [i] = CRGB(*c, *(c + 1), *(c + 2));
-    if (2 * Mid - i < NumLeds) leds [2 * Mid - i] = CRGB(*c, *(c + 1), *(c + 2));
+  for (uint16_t i = 0; i <= 150; i++) { //set first rainbow frame
+    c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255);
+    leds[(BottomMid + i) % NumLeds] = CRGB(*c, *(c + 1), *(c + 2));
+    leds[BottomMid - i] = CRGB(*c, *(c + 1), *(c + 2));
   }
   pinMode(SWPin, INPUT);
   digitalWrite(SWPin, HIGH);
@@ -350,10 +360,10 @@ void loop() {
       if (mode == 11) { //rainbow effect
         byte *c;
         color = (color + 1) % 256;
-        for (uint8_t i = 0; i <= Mid; i++) {
+        for (uint16_t i = 0; i <= 150; i++) {
           c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255); //& works as a form of mod
-          leds[i] = CRGB(*c, *(c + 1), *(c + 2));
-          if (2 * Mid - i < NumLeds) leds[2 * Mid - i] = CRGB(*c, *(c + 1), *(c + 2));
+          leds[(BottomMid + i) % NumLeds] = CRGB(*c, *(c + 1), *(c + 2));
+          leds[BottomMid - i] = CRGB(*c, *(c + 1), *(c + 2));
         }
         FastLED.show();
       }
@@ -372,6 +382,37 @@ void loop() {
           delay(40);
         }
       }
+    }
+  }
+  if (millis() - timerSerial > 250) {
+    timerSerial = millis();
+    if (Serial.available() >= 2) {
+      /*String data = Serial.readStringUntil('\n');
+      Serial.println(data);*/
+      for (int16_t i = brightness * (mode < 13 or mode > 15) + 255 * (mode > 12 and mode < 16); i >= 0; i -= (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16)) {
+        FastLED.setBrightness(i); //won't work with show(i)
+        FastLED.show();
+        delay(40);
+      }
+      brightness = Serial.read();
+      mode = Serial.read();
+      if (Serial.available() >= 3) {
+        chosenColor.r = Serial.read();
+        chosenColor.g = Serial.read();
+        chosenColor.b = Serial.read();
+      }
+      /*Serial.print(brightness);
+      Serial.print(",");
+      Serial.print(mode);
+      Serial.print(",");
+      Serial.print(chosenColor.r);
+      Serial.print(",");
+      Serial.print(chosenColor.g);
+      Serial.print(",");
+      Serial.print(chosenColor.b);
+      Serial.println();*/
+      timeWallpaper = millis() - 30000;
+      resuming = 1;
     }
   }
 }
