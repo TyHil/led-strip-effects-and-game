@@ -15,8 +15,8 @@
 #define YPin A3
 #define XPin A2
 #define SWPin 4
-#define TopMid 121
-#define BottomMid 275
+#define RgbStartLed 146 //0 to (NumLeds - 1)
+#define RgbEndLed 299 //0 to (NumLeds - 1)
 CRGB leds[NumLeds];
 
 /*Wallpaper Vars*/
@@ -200,12 +200,26 @@ void setup() {
   FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
   FastLED.clear();
   FastLED.show();
-  Serial.begin(9600); //Serial.println("");
+  //Serial.begin(9600); //Serial.println("");
   byte *c;
-  for (uint16_t i = 0; i <= 150; i++) { //set first rainbow frame
-    c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255);
-    leds[(BottomMid + i) % NumLeds] = CRGB(*c, *(c + 1), *(c + 2));
-    leds[BottomMid - i] = CRGB(*c, *(c + 1), *(c + 2));
+  bool increasingContinue = true;
+  bool decreasingContinue = true;
+  for (uint16_t i = 0; i <= max(abs(RgbStartLed - RgbEndLed), NumLeds - abs(RgbStartLed - RgbEndLed)); i++) {
+    c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255); //& works as a form of mod
+    if (increasingContinue) {
+      uint16_t increasing = mod(RgbStartLed + i, NumLeds);
+      leds[increasing] = CRGB(*c, *(c + 1), *(c + 2));
+      if (increasing == RgbEndLed) {
+        increasingContinue = false;
+      }
+    }
+    if (decreasingContinue) {
+      uint16_t decreasing = mod(RgbStartLed - i, NumLeds);
+      leds[mod(RgbStartLed - i, NumLeds)] = CRGB(*c, *(c + 1), *(c + 2));
+      if (decreasing == RgbEndLed) {
+        decreasingContinue = false;
+      }
+    }
   }
   pinMode(SWPin, INPUT);
   digitalWrite(SWPin, HIGH);
@@ -359,11 +373,25 @@ void loop() {
       }
       if (mode == 11) { //rainbow effect
         byte *c;
-        color = (color + 1) % 256;
-        for (uint16_t i = 0; i <= 150; i++) {
+        color = mod(color - 1, 256);
+        bool increasingContinue = true;
+        bool decreasingContinue = true;
+        for (uint16_t i = 0; i <= max(abs(RgbStartLed - RgbEndLed), NumLeds - abs(RgbStartLed - RgbEndLed)); i++) {
           c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255); //& works as a form of mod
-          leds[(BottomMid + i) % NumLeds] = CRGB(*c, *(c + 1), *(c + 2));
-          leds[BottomMid - i] = CRGB(*c, *(c + 1), *(c + 2));
+          if (increasingContinue) {
+            uint16_t increasing = mod(RgbStartLed + i, NumLeds);
+            leds[increasing] = CRGB(*c, *(c + 1), *(c + 2));
+            if (increasing == RgbEndLed) {
+              increasingContinue = false;
+            }
+          }
+          if (decreasingContinue) {
+            uint16_t decreasing = mod(RgbStartLed - i, NumLeds);
+            leds[mod(RgbStartLed - i, NumLeds)] = CRGB(*c, *(c + 1), *(c + 2));
+            if (decreasing == RgbEndLed) {
+              decreasingContinue = false;
+            }
+          }
         }
         FastLED.show();
       }
