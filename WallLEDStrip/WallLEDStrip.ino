@@ -200,7 +200,8 @@ void setup() {
   FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
   FastLED.clear();
   FastLED.show();
-  //Serial.begin(9600); //Serial.println("");
+  //Needed for RPI
+  Serial.begin(9600); //Serial.println("");
   byte *c;
   bool increasingContinue = true;
   bool decreasingContinue = true;
