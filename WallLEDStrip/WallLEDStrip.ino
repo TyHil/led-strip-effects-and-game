@@ -415,14 +415,17 @@ void loop() {
   }
   if (millis() - timerSerial > 250) {
     timerSerial = millis();
-    if (Serial.available() >= 2) {
-      /*String data = Serial.readStringUntil('\n');
-      Serial.println(data);*/
-      for (int16_t i = brightness * (mode < 13 or mode > 15) + 255 * (mode > 12 and mode < 16); i >= 0; i -= (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16)) {
-        FastLED.setBrightness(i); //won't work with show(i)
-        FastLED.show();
-        delay(40);
+    if (Serial.available() >= 3) {
+      uint8_t fade = Serial.read();
+      if (fade) {
+        for (int16_t i = brightness * (mode < 13 or mode > 15) + 255 * (mode > 12 and mode < 16); i >= 0; i -= (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16)) {
+          FastLED.setBrightness(i); //won't work with show(i)
+          FastLED.show();
+          delay(40);
+        }
       }
+      uint8_t buf[] = {brightness, mode, chosenColor.r, chosenColor.g, chosenColor.b};
+      Serial.write(buf, 5);
       brightness = Serial.read();
       mode = Serial.read();
       if (Serial.available() >= 3) {
@@ -440,8 +443,13 @@ void loop() {
       Serial.print(",");
       Serial.print(chosenColor.b);
       Serial.println();*/
-      timeWallpaper = millis() - 30000;
-      resuming = 1;
+      if (fade) {
+        timeWallpaper = millis() - 30000;
+        resuming = 1;
+      } else {
+        update();
+        FastLED.show();
+      }
     }
   }
 }
