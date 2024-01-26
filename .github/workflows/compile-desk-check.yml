@@ -1,4 +1,4 @@
-name: Compile Desk Check
+name: Compile Desk Light Check
 
 on: 
   push:

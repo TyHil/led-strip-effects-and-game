@@ -3,7 +3,7 @@ name: Compile Wall Check
 on: 
   push:
 #    paths:
-#      - WallLightLEDStrip/**
+#      - WallLEDStrip/**
 
 jobs:
   main:
@@ -18,7 +18,7 @@ jobs:
         uses: arduino/compile-sketches@v1
         with:
           sketch-paths: |
-            - WallLightLEDStrip
+            - WallLEDStrip
           fqbn: "arduino:avr:nano"
           libraries: |
             - name: FastLED

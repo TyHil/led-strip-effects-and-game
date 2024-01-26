@@ -3,7 +3,7 @@ name: Compile Headlamp Check
 on: 
   push:
 #    paths:
-#      - HeadlampLightLEDStrip/**
+#      - HeadlampLEDStrip/**
 
 jobs:
   main:
@@ -18,7 +18,7 @@ jobs:
         uses: arduino/compile-sketches@v1
         with:
           sketch-paths: |
-            - HeadlampLightLEDStrip
+            - HeadlampLEDStrip
           fqbn: "arduino:avr:nano"
           libraries: |
             - name: IRremote
