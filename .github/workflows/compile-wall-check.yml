@@ -1,0 +1,24 @@
+name: Compile Wall Check
+
+on: 
+  push:
+#    paths:
+#      - WallLightLEDStrip/**
+
+jobs:
+  main:
+    name: Compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Compile
+        uses: arduino/compile-sketches@v1
+        with:
+          sketch-paths: |
+            - WallLightLEDStrip
+          fqbn: "arduino:avr:nano"
+          libraries: |
+            - name: FastLED

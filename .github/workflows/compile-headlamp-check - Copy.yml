@@ -1,0 +1,25 @@
+name: Compile Headlamp Check
+
+on: 
+  push:
+#    paths:
+#      - HeadlampLightLEDStrip/**
+
+jobs:
+  main:
+    name: Compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Compile
+        uses: arduino/compile-sketches@v1
+        with:
+          sketch-paths: |
+            - HeadlampLightLEDStrip
+          fqbn: "arduino:avr:nano"
+          libraries: |
+            - name: IRremote
+            - name: FastLED

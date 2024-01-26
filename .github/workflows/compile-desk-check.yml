@@ -1,0 +1,25 @@
+name: Compile Desk Check
+
+on: 
+  push:
+#    paths:
+#      - DeskLightLEDStrip/**
+
+jobs:
+  main:
+    name: Compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Compile
+        uses: arduino/compile-sketches@v1
+        with:
+          sketch-paths: |
+            - DeskLightLEDStrip
+          fqbn: "arduino:avr:nano"
+          libraries: |
+            - name: IRremote
+            - name: FastLED
