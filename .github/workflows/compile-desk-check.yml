@@ -2,8 +2,8 @@ name: Compile Desk Light Check
 
 on: 
   push:
-#    paths:
-#      - DeskLightLEDStrip/**
+    paths:
+      - DeskLightLEDStrip/**
 
 jobs:
   main:

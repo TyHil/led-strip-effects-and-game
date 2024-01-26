@@ -2,8 +2,8 @@ name: Compile Headlamp Check
 
 on: 
   push:
-#    paths:
-#      - HeadlampLEDStrip/**
+    paths:
+      - HeadlampLEDStrip/**
 
 jobs:
   main:

@@ -2,8 +2,8 @@ name: Compile Wall Check
 
 on: 
   push:
-#    paths:
-#      - WallLEDStrip/**
+    paths:
+      - WallLEDStrip/**
 
 jobs:
   main:
