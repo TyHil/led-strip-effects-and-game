@@ -6,14 +6,6 @@
 
 
 
-/* Helper */
-
-int16_t mod(int16_t x, int16_t y) {
-  return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
-}
-
-
-
 /* Spark */
 
 Spark::Spark() {
@@ -35,7 +27,7 @@ void Spark::reset() {
 
 int16_t Spark::modOrNot(int16_t x, int16_t y, bool wrap) {
   if (wrap) {
-    return mod(x, y);
+    return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
   }
   return x;
 }
