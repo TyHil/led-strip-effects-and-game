@@ -20,10 +20,10 @@ CRGB leds[NumLeds];
 
 /*Wallpaper Vars*/
 
-long timeWallpaper = -30000; //inactive time before wallpaper is resumed
+int64_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 uint8_t brightness = 51, mode = 11, color; //brightness, effect mode: blue light amount/rainbow/strobe mode/chosen color, rainbow and strobe color
 bool resuming = 1; //wallpaper being resumed from game
-unsigned long flashTime; //strobe timing
+uint64_t flashTime; //strobe timing
 CRGB chosenColor = CRGB(136, 136, 136);
 
 /*Game Vars*/
@@ -33,12 +33,12 @@ uint8_t shotLength = 2; //distance of shooting in game
 int16_t playerPos; //position of player in game
 int16_t enemiesPos[23]; //positions of each enemy
 uint8_t enemies = 4; //number of enemies
-unsigned long timeEnemyMove; //how often enemies move
-unsigned long timeGeneral = 0; //time between shots in game and time between frames in wallpper
+uint64_t timeEnemyMove; //how often enemies move
+uint64_t timeGeneral = 0; //time between shots in game and time between frames in wallpper
 int8_t diedEnemies = -1; //number of eneies (level) of last death
 int16_t diedPos = -1; //position of last death
 
-unsigned long timerSerial = 0;
+uint64_t timerSerial = 0;
 
 /*Wallpaper Functions*/
 
@@ -120,8 +120,8 @@ void test() { //checks if any enemies are on top of the player
   }
 }
 void load() { //set new enemy positions
-  for (uint8_t i = 0; i <= 23; i++) enemiesPos[i] = -1;
   for (uint8_t i = 0; i < enemies; i++) enemiesPos[i] = random(6, NumLeds - 2);
+  for (uint8_t i = enemies; i < 23; i++) enemiesPos[i] = -1;
 }
 void DeadEnemy(int j) { //check for enemies in players shot
   for (uint8_t i = 0; i < enemies; i++) if (enemiesPos[i] == playerPos + j) enemiesPos[i] = -1;
@@ -239,7 +239,7 @@ void loop() {
       delay(40);
     }
     bright(1); //brightness change
-    if (millis() - timeEnemyMove >= 250 - 10 * (enemies - 4)) {
+    if (millis() - timeEnemyMove >= (uint64_t) (250 - 10 * (enemies - 4))) {
       for (uint8_t i = 0; i < enemies; i++) {
         if (enemiesPos[i] != -1) {
           uint8_t r = random(0, 4); //1/2 chance move forward or charge player
