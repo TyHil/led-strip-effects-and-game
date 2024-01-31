@@ -9,8 +9,7 @@
   Version 3.0
   Note: Neopixels doesn't have dynamic brightness
 */
-#include <FastLED.h>
-#define NumLeds 300
+#include "firework.h"
 #define DataPin 2
 #define YPin A3
 #define XPin A2
@@ -106,29 +105,8 @@ int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
 void explosion(int start, CRGB color) { //generates an explosion at a point with a certain color
-  /*CRGB colorList[51]; //code for a random color explsion
-    for (int j = 0; j < 50; j++) colorList[j] = CRGB(random(0,255), random(0,255), random(0,255));
-    colorList[50] = color;*/
-  float slopes[51]; //creates linear equations with random slopes
-  for (int j = 0; j < 50; j++) slopes[j] = (float)random(-2000, 2001) / 100; //higher slope higher speed
-  slopes[50] = 0;
-  for (int frame = 0; frame < 150; frame++) { //each frame puts a new x (time) value into the linear equations and gets a different y value (position)
-    ///if (frame < 80) for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame, 0.6))) + NumLeds - 1) + NumLeds - 1)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
-    ///for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame + 1, 0.6))) + NumLeds - 1) + NumLeds - 1)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
-    if (frame < 80) for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame, 0.6)), NumLeds)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
-    for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame + 1, 0.6)), NumLeds)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
-    FastLED.show();
-    delay(20);
-  }
-  /*///for (uint16_t i = 0; i < 20; i++) { //fill empty spots between dots to create full green
-    for (int j = 0; j < 51; j++) {
-      int16_t lightPos = abs(-abs(-abs((int16_t)(start + slopes[j] * pow(150, 0.6))) + NumLeds - 1) + NumLeds - 1);
-      leds[min(max(lightPos + i, 0), NumLeds - 1)] = color;
-      leds[min(max(lightPos - i, 0), NumLeds - 1)] = color;
-    }
-    FastLED.show();
-    delay(20);
-    }*/
+  Firework firework = Firework(start, true, false, true, color);
+  firework.run(leds);
 }
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
