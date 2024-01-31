@@ -142,8 +142,8 @@ void test() { //checks if any enemies are on top of the player
   }
 }
 void load() { //set new enemy positions
-  for (uint8_t i = 0; i <= 23; i++) enemiesPos[i] = -1;
   for (uint8_t i = 0; i < enemies; i++) enemiesPos[i] = random(6, NumLeds - 2);
+  for (uint8_t i = enemies; i < 23; i++) enemiesPos[i] = -1;
 }
 void DeadEnemy(int j) { //check for enemies in players shot
   for (uint8_t i = 0; i < enemies; i++) if (enemiesPos[i] == playerPos + j) enemiesPos[i] = -1;
@@ -261,7 +261,7 @@ void loop() {
       delay(40);
     }
     bright(1); //brightness change
-    if (millis() - timeEnemyMove >= 250 - 10 * (enemies - 4)) {
+    if (millis() - timeEnemyMove >= (unsigned long) (250 - 10 * (enemies - 4))) {
       for (uint8_t i = 0; i < enemies; i++) {
         if (enemiesPos[i] != -1) {
           uint8_t r = random(0, 4); //1/2 chance move forward or charge player
