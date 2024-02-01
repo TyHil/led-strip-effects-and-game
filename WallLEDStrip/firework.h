@@ -31,6 +31,6 @@ class Firework {
     bool cover, fade, wrap;
     Firework(int16_t setPos, bool setCover, bool setFade, bool setWrap, CRGB *setColor);
     void reset(int16_t setPos);
-    void move(CRGB leds[]);
+    bool move(CRGB leds[]);
     void run(CRGB leds[]);
 };

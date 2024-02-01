@@ -64,11 +64,13 @@ void Firework::reset(int16_t setPos) {
   }
 }
 
-void Firework::move(CRGB leds[]) {
+bool Firework::move(CRGB leds[]) {
   uint8_t sparksOffScreen = 0;
   for (uint8_t i = 0; i < NumSparks; i++) {
     sparks[i].move(pos, frame, color, cover, fade, wrap, leds);
   }
+  frame++;
+  return frame >= MaxFrames;
 }
 
 void Firework::run(CRGB leds[]) {
