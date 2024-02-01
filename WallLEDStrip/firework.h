@@ -14,12 +14,11 @@ class Spark {
     float slope; //position, velocity
     bool randomColor;
     bool offScreen = 0;
-    CRGB color;
+    CRGB *color;
     Spark();
-    Spark(CRGB color);
     int16_t modOrNot(int16_t x, int16_t y, bool wrap);
     void reset();
-    void move(int16_t start, int16_t frame, bool cover, bool fade, bool wrap, CRGB leds[]);
+    void move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fade, bool wrap, CRGB leds[]);
 };
 
 class Firework {
@@ -27,12 +26,11 @@ class Firework {
     int16_t pos;
     int16_t frame;
     bool randomColors;
-    CRGB color;
+    CRGB *color;
     Spark sparks[NumSparks];
     bool cover, fade, wrap;
-    Firework(int16_t pos, bool cover, bool fade, bool wrap, bool randomColors);
-    Firework(int16_t pos, bool cover, bool fade, bool wrap, CRGB color);
-    void reset(int16_t pos);
+    Firework(int16_t setPos, bool setCover, bool setFade, bool setWrap, CRGB *setColor);
+    void reset(int16_t setPos);
     void move(CRGB leds[]);
     void run(CRGB leds[]);
 };
