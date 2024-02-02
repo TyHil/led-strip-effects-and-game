@@ -10,9 +10,9 @@
 
 Spark::Spark() {}
 
-void Spark::reset() {
+void Spark::reset(uint8_t power) {
   offScreen = 0;
-  slope = (float)random(-2000, 2001) / 100;
+  slope = (float)random(-10 * power, 10 * power + 1) / 100.0;
 }
 
 int16_t Spark::modOrNot(int16_t x, int16_t y, bool wrap) {
@@ -49,10 +49,9 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
     offScreen = 1;
     return;
   }
-  if (frame > CoverFade and fade) {
+  if (fade and frame > CoverFade) {
     float fadeAmount = ((float)(frame - CoverFade) / (float)(MaxFrames - CoverFade)) * -1.0 + 1;
     leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
-    //leds[pos] = *color;
   } else {
     leds[pos] = *color;
   }
@@ -62,7 +61,7 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
 
 /* Firework */
 
-Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, bool setCover, bool setWrap) {
+Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap) {
   codeColor = setColor;
   cover = setCover;
   wrap = setWrap;
@@ -71,10 +70,10 @@ Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, bool setCover, 
   for (uint8_t i = 0; i < NumSparks; i++) {
     sparks[i] = Spark();
   }
-  reset(setPos);
+  reset(setPos, setPower);
 }
 
-Firework::Firework(int16_t setPos, CRGB *setColor, bool setCover, bool setWrap, bool setFade) {
+Firework::Firework(int16_t setPos, CRGB *setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade) {
   constructorColor = setColor;
   cover = setCover;
   wrap = setWrap;
@@ -83,13 +82,15 @@ Firework::Firework(int16_t setPos, CRGB *setColor, bool setCover, bool setWrap, 
   for (uint8_t i = 0; i < NumSparks; i++) {
     sparks[i] = Spark();
   }
-  reset(setPos);
+  reset(setPos, setPower);
 }
 
-void Firework::reset(int16_t setPos) {
+void Firework::reset(int16_t setPos, uint8_t setPower) {
   pos = setPos;
+  power = setPower;
+  frame = 0;
   for (uint8_t i = 0; i < NumSparks; i++) {
-    sparks[i].reset();
+    sparks[i].reset(power);
   }
 }
 
