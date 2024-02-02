@@ -50,9 +50,9 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
     return;
   }
   if (frame > CoverFade and fade) {
-    //float fadeAmount = (frame - CoverFade) / (MaxFrames - CoverFade);
-    //leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
-    leds[pos] = *color;
+    float fadeAmount = ((float)(frame - CoverFade) / (float)(MaxFrames - CoverFade)) * -1.0 + 1;
+    leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
+    //leds[pos] = *color;
   } else {
     leds[pos] = *color;
   }

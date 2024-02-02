@@ -104,16 +104,9 @@ void adjustShotLength() { //shot lenght get bigger after a point
 int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
-void explosion(int start, CRGB::HTMLColorCode color) { //generates an explosion at a point with a certain color
-  CRGB *_color = new CRGB(255, 0, 0);
-  Firework(start, _color, true, true, true).run(leds);
-  delete _color;
-  Firework(start, color, true, true).run(leds);
-}
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
     if (playerPos == enemiesPos[i]) {
-      //explosion(playerPos, CRGB::Green);
       Firework(playerPos, CRGB::Green, true, true).run(leds);
       diedEnemies = enemies;
       diedPos = playerPos;
@@ -219,7 +212,7 @@ void loop() {
       leds[playerPos] = CRGB::Green;
     }
     if (startingGame) { //new game
-      explosion(0, CRGB::Green);
+      Firework(0, CRGB::Green, true, true).run(leds);
       start();
       startingGame = false;
     }
@@ -266,7 +259,7 @@ void loop() {
       enemies++;
       adjustShotLength();
       load();
-      explosion(NumLeds - 1, CRGB::Blue);
+      Firework(NumLeds - 1, CRGB::Blue, true, true).run(leds);
       int j = 0;
       for (int i = 20; i <= enemies + 19; i++) { //display level
         delay(100);
