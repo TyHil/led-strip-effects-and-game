@@ -105,12 +105,16 @@ int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
 void explosion(int start, CRGB::HTMLColorCode color) { //generates an explosion at a point with a certain color
-  Firework(start, true, false, true, color).run(leds);
+  CRGB *_color = new CRGB(255, 0, 0);
+  Firework(start, _color, true, true, true).run(leds);
+  delete _color;
+  Firework(start, color, true, true).run(leds);
 }
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
     if (playerPos == enemiesPos[i]) {
-      explosion(playerPos, CRGB::Green);
+      //explosion(playerPos, CRGB::Green);
+      Firework(playerPos, CRGB::Green, true, true).run(leds);
       diedEnemies = enemies;
       diedPos = playerPos;
       start();
