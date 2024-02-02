@@ -9,8 +9,7 @@
   Version 3.0
   Note: Neopixels doesn't have dynamic brightness
 */
-#include <FastLED.h>
-#define NumLeds 300
+#include "firework.h"
 #define DataPin 2
 #define YPin A3
 #define XPin A2
@@ -25,7 +24,9 @@ int64_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 uint8_t brightness = 51, mode = 11, color; //brightness, effect mode: blue light amount/rainbow/strobe mode/chosen color, rainbow and strobe color
 bool resuming = 1; //wallpaper being resumed from game
 uint64_t flashTime; //strobe timing
-CRGB chosenColor = CRGB(136, 136, 136);
+CRGB *chosenColor = new CRGB(136, 136, 136);
+Firework firework = Firework(150, chosenColor, 100, false, false, true);
+uint64_t timerFirework = 0;
 
 /*Game Vars*/
 
@@ -48,9 +49,9 @@ void update() { //set all to correct brightness and blue light value
   else FastLED.setBrightness(255);
   CRGB setColor;
   if (mode <= 10) setColor = CRGB(255, 255, mode * 25.5);
-  else if (mode > 12 and  mode < 16) setColor = CRGB(chosenColor.r * (mode == 13), chosenColor.g * (mode == 14), chosenColor.b * (mode == 15));
-  else if (mode == 16) setColor = chosenColor;
-  if (mode != 11 and mode != 12) for (uint16_t i = 0; i < NumLeds; i++) leds[i] = setColor;
+  else if (mode > 12 and mode < 16) setColor = CRGB(chosenColor->r * (mode == 13), chosenColor->g * (mode == 14), chosenColor->b * (mode == 15));
+  else if (mode == 16) setColor = *chosenColor;
+  if (mode != 11 and mode != 12 and mode != 17) for (uint16_t i = 0; i < NumLeds; i++) leds[i] = setColor;
 }
 byte * Wheel(byte WheelPos) { //Rainbow fuction from NeoPixel library strandtest example code
   static byte c[3];
@@ -76,15 +77,15 @@ byte * Wheel(byte WheelPos) { //Rainbow fuction from NeoPixel library strandtest
 
 void bright(bool wait) { //check for brightness change and update
   if (analogRead(XPin) > 923) {
-    if (mode == 13 and millis() - timeWallpaper >= 30000) chosenColor.r = max(chosenColor.r - 17, 0);
-    else if (mode == 14 and millis() - timeWallpaper >= 30000) chosenColor.g = max(chosenColor.g - 17, 0);
-    else if (mode == 15 and millis() - timeWallpaper >= 30000) chosenColor.b = max(chosenColor.b - 17, 0);
+    if (mode == 13 and millis() - timeWallpaper >= 30000) chosenColor->r = max(chosenColor->r - 17, 0);
+    else if (mode == 14 and millis() - timeWallpaper >= 30000) chosenColor->g = max(chosenColor->g - 17, 0);
+    else if (mode == 15 and millis() - timeWallpaper >= 30000) chosenColor->b = max(chosenColor->b - 17, 0);
     else brightness = max(brightness - 17, 17);
   }
   if (analogRead(XPin) < 100) {
-    if (mode == 13 and millis() - timeWallpaper >= 30000) chosenColor.r = min(chosenColor.r + 17, 255);
-    else if (mode == 14 and millis() - timeWallpaper >= 30000) chosenColor.g = min(chosenColor.g + 17, 255);
-    else if (mode == 15 and millis() - timeWallpaper >= 30000) chosenColor.b = min(chosenColor.b + 17, 255);
+    if (mode == 13 and millis() - timeWallpaper >= 30000) chosenColor->r = min(chosenColor->r + 17, 255);
+    else if (mode == 14 and millis() - timeWallpaper >= 30000) chosenColor->g = min(chosenColor->g + 17, 255);
+    else if (mode == 15 and millis() - timeWallpaper >= 30000) chosenColor->b = min(chosenColor->b + 17, 255);
     else brightness = min(brightness + 17, 255);
   }
   if ((analogRead(XPin) > 923 or analogRead(XPin) < 100) and millis() - timeWallpaper < 30000) {
@@ -105,35 +106,10 @@ void adjustShotLength() { //shot lenght get bigger after a point
 int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
-void explosion(int start, CRGB color) { //generates an explosion at a point with a certain color
-  /*CRGB colorList[51]; //code for a random color explsion
-    for (int j = 0; j < 50; j++) colorList[j] = CRGB(random(0,255), random(0,255), random(0,255));
-    colorList[50] = color;*/
-  float slopes[51]; //creates linear equations with random slopes
-  for (int j = 0; j < 50; j++) slopes[j] = (float)random(-2000, 2001) / 100; //higher slope higher speed
-  slopes[50] = 0;
-  for (int frame = 0; frame < 150; frame++) { //each frame puts a new x (time) value into the linear equations and gets a different y value (position)
-    ///if (frame < 80) for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame, 0.6))) + NumLeds - 1) + NumLeds - 1)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
-    ///for (int j = 0; j < 51; j++) leds[abs(-abs(-abs((int16_t)(start + slopes[j]*pow(frame + 1, 0.6))) + NumLeds - 1) + NumLeds - 1)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
-    if (frame < 80) for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame, 0.6)), NumLeds)] = CRGB::Black; //remove last position, starts leaving a trail after 80 frames, the abs() and + NumLeds - 1 allow the particles to bounce
-    for (int j = 0; j < 51; j++) leds[mod((int16_t)(start + slopes[j]*pow(frame + 1, 0.6)), NumLeds)] = color; //set new position, use colorList[j] instead of color is for a random color explsion
-    FastLED.show();
-    delay(20);
-  }
-  /*///for (uint16_t i = 0; i < 20; i++) { //fill empty spots between dots to create full green
-    for (int j = 0; j < 51; j++) {
-      int16_t lightPos = abs(-abs(-abs((int16_t)(start + slopes[j] * pow(150, 0.6))) + NumLeds - 1) + NumLeds - 1);
-      leds[min(max(lightPos + i, 0), NumLeds - 1)] = color;
-      leds[min(max(lightPos - i, 0), NumLeds - 1)] = color;
-    }
-    FastLED.show();
-    delay(20);
-    }*/
-}
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
     if (playerPos == enemiesPos[i]) {
-      explosion(playerPos, CRGB::Green);
+      Firework(playerPos, CRGB::Green, 200, true, true).run(leds);
       diedEnemies = enemies;
       diedPos = playerPos;
       start();
@@ -238,7 +214,7 @@ void loop() {
       leds[playerPos] = CRGB::Green;
     }
     if (startingGame) { //new game
-      explosion(0, CRGB::Green);
+      Firework(0, CRGB::Green, 200, true, true).run(leds);
       start();
       startingGame = false;
     }
@@ -285,7 +261,7 @@ void loop() {
       enemies++;
       adjustShotLength();
       load();
-      explosion(NumLeds - 1, CRGB::Blue);
+      Firework(NumLeds - 1, CRGB::Blue, 200, true, true).run(leds);
       int j = 0;
       for (int i = 20; i <= enemies + 19; i++) { //display level
         delay(100);
@@ -365,12 +341,18 @@ void loop() {
         mode = max(mode - 1, 0);
         if (mode < 13) FastLED.setBrightness(brightness);
       }
-      if (analogRead(YPin) < 100) mode = min(mode + 1, 16); //right, increase mode
-      if ((analogRead(YPin) > 923 or analogRead(YPin) < 100) and mode <= 10) for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB(255, 255, mode * 25.5); //update LEDs if any
+      if (analogRead(YPin) < 100) { //right, increase mode
+        mode = min(mode + 1, 17);
+      }
+      if ((analogRead(YPin) > 923 or analogRead(YPin) < 100) and mode <= 10) { //update LEDs if any
+        for (uint16_t i = 0; i < NumLeds; i++) {
+          leds[i] = CRGB(255, 255, mode * 25.5);
+        }
+      }
       bright(0);
       if (analogRead(XPin) > 923 or analogRead(XPin) < 100 or analogRead(YPin) > 923 or analogRead(YPin) < 100) { //any
         update();
-        if (mode <= 10 or mode > 12) FastLED.show();
+        if (mode <= 10 or (mode > 12 and mode != 17)) FastLED.show();
       }
       if (mode == 11) { //rainbow effect
         byte *c;
@@ -405,43 +387,54 @@ void loop() {
       if (digitalRead(SWPin) == 0) timeWallpaper = millis();
       if (resuming) { //fade in on resume
         resuming = 0;
-        for (int16_t i = (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16); i <= brightness * (mode < 13 or mode > 15) + 255 * (mode > 12 and mode < 16); i += (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16)) {
+        for (int16_t i = (brightness / 17) * (mode < 13 or mode == 16) + 17 * (mode > 12 and mode < 16); i <= brightness * (mode < 13 or mode == 16) + 255 * (mode > 12 and mode < 16); i += (brightness / 17) * (mode < 13 or mode == 16) + 17 * (mode > 12 and mode < 16)) {
           FastLED.setBrightness(i); //won't work with show(i)
           FastLED.show();
           delay(40);
         }
       }
     }
+    if (mode == 17 and millis() - timerFirework >= 20) {
+      if (millis() - timerFirework >= 250) {
+        for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB::Black;
+        firework.reset(random(0, NumLeds), random(10, 41));
+      }
+      timerFirework = millis();
+      if (firework.move(leds)) {
+        firework.reset(random(0, NumLeds), random(50, 151));
+      }
+      FastLED.show();
+    }
   }
   if (millis() - timerSerial > 250) {
     timerSerial = millis();
     if (Serial.available() >= 3) {
       uint8_t fade = Serial.read();
-      if (fade) {
-        for (int16_t i = brightness * (mode < 13 or mode > 15) + 255 * (mode > 12 and mode < 16); i >= 0; i -= (brightness / 17) * (mode < 13 or mode > 15) + 17 * (mode > 12 and mode < 16)) {
+      if (fade and mode != 17) {
+        for (int16_t i = brightness * (mode < 13 or mode == 16) + 255 * (mode > 12 and mode < 16); i >= 0; i -= (brightness / 17) * (mode < 13 or mode == 16) + 17 * (mode > 12 and mode < 16)) {
           FastLED.setBrightness(i); //won't work with show(i)
           FastLED.show();
           delay(40);
         }
       }
-      uint8_t buf[] = {brightness, mode, chosenColor.r, chosenColor.g, chosenColor.b};
+      uint8_t buf[] = {brightness, mode, chosenColor->r, chosenColor->g, chosenColor->b};
       Serial.write(buf, 5);
       brightness = Serial.read();
       mode = Serial.read();
       if (Serial.available() >= 3) {
-        chosenColor.r = Serial.read();
-        chosenColor.g = Serial.read();
-        chosenColor.b = Serial.read();
+        chosenColor->r = Serial.read();
+        chosenColor->g = Serial.read();
+        chosenColor->b = Serial.read();
       }
       /*Serial.print(brightness);
       Serial.print(",");
       Serial.print(mode);
       Serial.print(",");
-      Serial.print(chosenColor.r);
+      Serial.print(chosenColor->r);
       Serial.print(",");
-      Serial.print(chosenColor.g);
+      Serial.print(chosenColor->g);
       Serial.print(",");
-      Serial.print(chosenColor.b);
+      Serial.print(chosenColor->b);
       Serial.println();*/
       if (fade) {
         timeWallpaper = millis() - 30000;
