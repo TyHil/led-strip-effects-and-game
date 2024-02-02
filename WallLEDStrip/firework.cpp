@@ -22,7 +22,7 @@ int16_t Spark::modOrNot(int16_t x, int16_t y, bool wrap) {
   return x;
 }
 
-void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fade, bool wrap, CRGB leds[]) {
+void Spark::move(int16_t start, int16_t frame, CRGB::HTMLColorCode color, bool cover, bool fade, bool wrap, CRGB leds[]) {
   if (offScreen) {
     return;
   }
@@ -35,10 +35,11 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
     return;
   }
   if (frame > CoverFade and fade) {
-    float fadeAmount = (frame - CoverFade) / (MaxFrames - CoverFade);
-    leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
+    //float fadeAmount = (frame - CoverFade) / (MaxFrames - CoverFade);
+    //leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
+    leds[pos] = color;
   } else {
-    leds[pos] = *color;
+    leds[pos] = color;
   }
 }
 
@@ -46,7 +47,7 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
 
 /* Firework */
 
-Firework::Firework(int16_t setPos, bool setCover, bool setFade, bool setWrap, CRGB *setColor) {
+Firework::Firework(int16_t setPos, bool setCover, bool setFade, bool setWrap, CRGB::HTMLColorCode setColor) {
   cover = setCover;
   fade = setFade;
   wrap = setWrap;

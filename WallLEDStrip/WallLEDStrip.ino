@@ -104,8 +104,8 @@ void adjustShotLength() { //shot lenght get bigger after a point
 int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
-void explosion(int start, CRGB color) { //generates an explosion at a point with a certain color
-  Firework(start, true, false, true, &color).run(leds);
+void explosion(int start, CRGB::HTMLColorCode color) { //generates an explosion at a point with a certain color
+  Firework(start, true, false, true, color).run(leds);
 }
 void test() { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemies; i++) {
