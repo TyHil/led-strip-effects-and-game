@@ -346,8 +346,14 @@ void loop() {
         mode = max(mode - 1, 0);
         if (mode < 13) FastLED.setBrightness(brightness);
       }
-      if (analogRead(YPin) < 100) mode = min(mode + 1, 16); //right, increase mode
-      if ((analogRead(YPin) > 923 or analogRead(YPin) < 100) and mode <= 10) for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB(255, 255, mode * 25.5); //update LEDs if any
+      if (analogRead(YPin) < 100) { //right, increase mode
+        mode = min(mode + 1, 17);
+      }
+      if ((analogRead(YPin) > 923 or analogRead(YPin) < 100) and mode <= 10) { //update LEDs if any
+        for (uint16_t i = 0; i < NumLeds; i++) {
+          leds[i] = CRGB(255, 255, mode * 25.5);
+        }
+      }
       bright(0);
       if (analogRead(XPin) > 923 or analogRead(XPin) < 100 or analogRead(YPin) > 923 or analogRead(YPin) < 100) { //any
         update();
