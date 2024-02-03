@@ -10,6 +10,7 @@
   Note: Neopixels doesn't have dynamic brightness
 */
 #include "firework.h"
+#include "game.h"
 #define DataPin 2
 #define YPin A3
 #define XPin A2
@@ -20,27 +21,23 @@ CRGB leds[NumLeds];
 
 /*Wallpaper Vars*/
 
-int64_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
+int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 uint8_t brightness = 51, mode = 11, color; //brightness, effect mode: blue light amount/rainbow/strobe mode/chosen color, rainbow and strobe color
 bool resuming = 1; //wallpaper being resumed from game
-uint64_t flashTime; //strobe timing
+uint32_t flashTime; //strobe timing
 CRGB *chosenColor = new CRGB(136, 136, 136);
 Firework firework = Firework(150, chosenColor, 100, false, false, true);
-uint64_t timerFirework = 0;
+uint32_t timerFirework = 0;
+uint32_t generalTimer = 0; //time between frames in wallpaper
 
 /*Game Vars*/
 
-boolean startingGame = true; //new game
-uint8_t shotLength = 2; //distance of shooting in game
-int16_t playerPos; //position of player in game
-int16_t enemiesPos[23]; //positions of each enemy
-uint8_t enemies = 4; //number of enemies
-uint64_t timeEnemyMove; //how often enemies move
-uint64_t timeGeneral = 0; //time between shots in game and time between frames in wallpper
-int8_t diedEnemies = -1; //number of eneies (level) of last death
-int16_t diedPos = -1; //position of last death
+bool startingGame = true; //new game
+Game game = Game();
 
-uint64_t timerSerial = 0;
+/*Serial Vars*/
+
+uint32_t timerSerial = 0;
 
 /*Wallpaper Functions*/
 
@@ -93,83 +90,8 @@ void bright(bool wait) { //check for brightness change and update
     if (wait) delay(250);
   }
 }
-void died(int toTest) { //if a grvaestone shsould be placed at a position of last death
-  if (enemies == diedEnemies and toTest == diedPos) leds[diedPos] = CRGB(20, 20, 20);
-}
-void adjustShotLength() { //shot lenght get bigger after a point
-  if (enemies < 9) {
-    shotLength = 2;
-  } else {
-    shotLength = 3;
-  }
-}
 int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
-}
-void test() { //checks if any enemies are on top of the player
-  for (uint8_t i = 0; i < enemies; i++) {
-    if (playerPos == enemiesPos[i]) {
-      Firework(playerPos, CRGB::Green, 200, true, true).run(leds);
-      diedEnemies = enemies;
-      diedPos = playerPos;
-      start();
-      break;
-    }
-  }
-}
-void load() { //set new enemy positions
-  for (uint8_t i = 0; i < enemies; i++) enemiesPos[i] = random(6, NumLeds - 2);
-  for (uint8_t i = enemies; i < 23; i++) enemiesPos[i] = -1;
-}
-void DeadEnemy(int j) { //check for enemies in players shot
-  for (uint8_t i = 0; i < enemies; i++) if (enemiesPos[i] == playerPos + j) enemiesPos[i] = -1;
-}
-void start() { //reset game
-  if (enemies > 4) { //if not on first level
-    int j = 0; //adds a gap every 5 leds
-    for (int i = 20; i <= enemies + 18; i++) { //display level beaten
-      delay(100);
-      leds[i + j] = CRGB::Red;
-      FastLED.show();
-      if (i % 5 == 4) {
-        j++;
-      }
-    }
-    delay(1000);
-    j = 0;
-    for (int i = 20; i <= enemies + 19; i++) { //remove display
-      leds[i + j] = CRGB::Green;
-      if (i % 5 == 4) {
-        j++;
-      }
-    }
-    FastLED.show();
-  }
-  delay(100);
-  load();
-  enemies = 4;
-  adjustShotLength();
-  for (int i = 20; i <= 23; i++) leds[i] = CRGB::Red; //dsiplay level 1, 4 enemies
-  boolean isNotEnemy = true;
-  leds[NumLeds - 1] = CRGB::Blue;
-  FastLED.show();
-  for (int i = NumLeds - 2; i > 0; i--) { //display enemies
-    isNotEnemy = true;
-    for (int j = 0; j < enemies; j++) {
-      if (i == enemiesPos[j]) {
-        leds[i] = CRGB::Red;
-        isNotEnemy = false;
-      }
-    }
-    if (isNotEnemy) {
-      if (enemies == diedEnemies and i == diedPos) leds[i] = CRGB(20, 20, 20); //gravestone
-      else leds[i] = CRGB::Black;
-    }
-    FastLED.show();
-  }
-  playerPos = 0;
-  leds[0] = CRGB::Green;
-  FastLED.show();
 }
 
 void setup() {
@@ -209,116 +131,19 @@ void loop() {
 
   if (millis() - timeWallpaper < 30000) {
     if (!resuming and !startingGame) FastLED.clear(); //normal frame
-    if (!resuming) { //coming from wallpaper
+    if (!resuming) { //for going back to wallpaper
       resuming = 1;
-      leds[playerPos] = CRGB::Green;
     }
     if (startingGame) { //new game
       Firework(0, CRGB::Green, 200, true, true).run(leds);
-      start();
+      game.start(leds);
       startingGame = false;
     }
-    if (analogRead(YPin) > 682) { //left
-      leds[playerPos] = CRGB::Black;
-      died(playerPos);
-      playerPos++;
-      leds[playerPos] = CRGB::Green;
-      test();
+    if (analogRead(YPin) > 682 or analogRead(YPin) < 341 or !digitalRead(SWPin)) {
       timeWallpaper = millis();
-      delay(40);
     }
-    if (analogRead(YPin) < 341 and playerPos != 0) { //rigth
-      leds[playerPos] = CRGB::Black;
-      died(playerPos);
-      playerPos--;
-      leds[playerPos] = CRGB::Green;
-      test();
-      timeWallpaper = millis();
-      delay(40);
-    }
+    game.run(analogRead(YPin) > 682, analogRead(YPin) < 341, !digitalRead(SWPin), leds);
     bright(1); //brightness change
-    if (millis() - timeEnemyMove >= (uint64_t) (250 - 10 * (enemies - 4))) {
-      for (uint8_t i = 0; i < enemies; i++) {
-        if (enemiesPos[i] != -1) {
-          uint8_t r = random(0, 4); //1/2 chance move forward or charge player
-          if ((r == 0 or r == 1 or enemiesPos[i] - 1 == playerPos or enemiesPos[i] - 2 == playerPos or enemiesPos[i] - 3 == playerPos or enemiesPos[i] - 4 == playerPos or enemiesPos[i] - 5 == playerPos) and enemiesPos[i] != 0) {
-            leds[enemiesPos[i]] = CRGB::Black;
-            died(enemiesPos[i]);
-            enemiesPos[i]--;
-            leds[enemiesPos[i]] = CRGB::Red;
-          } else if ((r == 2) and enemiesPos[i] < NumLeds - 2) { //1/4 chance move back
-            leds[enemiesPos[i]] = CRGB::Black;
-            died(enemiesPos[i]);
-            enemiesPos[i]++;
-            leds[enemiesPos[i]] = CRGB::Red;
-          }
-        }
-      }
-      timeEnemyMove = millis();
-      test();
-    }
-    if (playerPos == NumLeds - 1) { //beat level
-      enemies++;
-      adjustShotLength();
-      load();
-      Firework(NumLeds - 1, CRGB::Blue, 200, true, true).run(leds);
-      int j = 0;
-      for (int i = 20; i <= enemies + 19; i++) { //display level
-        delay(100);
-        leds[i + j] = CRGB::Red;
-        FastLED.show();
-        if (i % 5 == 4) {
-          j++;
-        }
-      }
-      delay(500);
-      playerPos = 0;
-      boolean isNotEnemy;
-      leds[playerPos] = CRGB::Green;
-      FastLED.show();
-      for (int i = 1; i <= NumLeds - 2; i++) { //display enemies
-        isNotEnemy = true;
-        for (uint8_t j = 0; j < enemies; j++) {
-          if (i == enemiesPos[j]) {
-            leds[i] = CRGB::Red;
-            isNotEnemy = false;
-          }
-        }
-        if (isNotEnemy) {
-          if (enemies == diedEnemies and i == diedPos) leds[i] = CRGB(20, 20, 20); //gravestone
-          else leds[i] = CRGB::Black;
-        }
-        FastLED.show();
-      }
-      leds[NumLeds - 1] = CRGB::Blue;
-      FastLED.show();
-    }
-    if (!digitalRead(SWPin)) {
-      timeWallpaper = millis();
-    }
-    if (millis() - timeGeneral >= 750 and !digitalRead(SWPin)) { //shot
-      leds[playerPos] = CRGB::Blue;
-      FastLED.show();
-      delay(50);
-      for (uint8_t i = 1; i < shotLength + 1; i++) { //shot out animation
-        if (playerPos < NumLeds - i) leds[playerPos + i] = CRGB::Blue;
-        FastLED.show();
-        delay(50);
-      }
-      delay(50);
-      for (uint8_t i = shotLength; i > 0; i--) { //shot in animation and check for hits
-        if (playerPos < NumLeds - i) {
-          leds[playerPos + i] = CRGB::Black;
-          DeadEnemy(i);
-        }
-        FastLED.show();
-        delay(50);
-      }
-      leds[playerPos] = CRGB::Green;
-      leds[NumLeds - 1] = CRGB::Blue;
-      timeGeneral = millis();
-      delay(50);
-    }
     FastLED.show();
   }
 
@@ -327,12 +152,12 @@ void loop() {
   else {
     if (mode == 12 and digitalRead(6)) { //if laser input recieved then sync with other strip
       color = 0;
-      timeGeneral = millis() - 151;
+      generalTimer = millis() - 151;
       flashTime = millis() - 301;
       delay(90);
     }
-    if (millis() - timeGeneral > 150) {
-      timeGeneral = millis();
+    if (millis() - generalTimer > 150) {
+      generalTimer = millis();
       if (resuming) { //set up to resume animation
         update();
         FastLED.setBrightness(0);
