@@ -11,8 +11,8 @@ class Player {
   public:
     int16_t pos;
     uint8_t shotLength; //distance of shooting
-    uint64_t timeMove; //how often player moves
-    uint64_t timeShoot; //how often player shoots
+    uint32_t timeMove; //how often player moves
+    uint32_t timeShoot; //how often player shoots
     int8_t enemyCountAtDeath; //number of eneies (level) of last death
     int16_t posAtDeath; //position of last death
     Player();
@@ -42,7 +42,7 @@ class Game {
     Player player;
     Enemy enemies[23];
     uint8_t enemyCount; //number of enemies
-    uint64_t timeEnemyMove; //how often enemies move
+    uint32_t timeEnemyMove; //how often enemies move
     Game();
     void displayLevel(CRGB leds[]);
     void start(CRGB leds[]);

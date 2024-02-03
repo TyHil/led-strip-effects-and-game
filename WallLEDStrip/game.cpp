@@ -243,7 +243,7 @@ void Game::enemyReset() {
 }
 
 void Game::enemyMove(CRGB leds[]) {
-  if (millis() - timeEnemyMove >= (uint64_t) (250 - 10 * (enemyCount - 4))) {
+  if (millis() - timeEnemyMove >= (uint32_t) (250 - 10 * (enemyCount - 4))) {
     timeEnemyMove = millis();
     for (uint8_t i = 0; i < enemyCount; i++) {
       enemies[i].move(player.pos);

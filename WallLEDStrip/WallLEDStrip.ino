@@ -21,14 +21,14 @@ CRGB leds[NumLeds];
 
 /*Wallpaper Vars*/
 
-int64_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
+int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 uint8_t brightness = 51, mode = 11, color; //brightness, effect mode: blue light amount/rainbow/strobe mode/chosen color, rainbow and strobe color
 bool resuming = 1; //wallpaper being resumed from game
-uint64_t flashTime; //strobe timing
+uint32_t flashTime; //strobe timing
 CRGB *chosenColor = new CRGB(136, 136, 136);
 Firework firework = Firework(150, chosenColor, 100, false, false, true);
-uint64_t timerFirework = 0;
-uint64_t generalTimer = 0; //time between frames in wallpaper
+uint32_t timerFirework = 0;
+uint32_t generalTimer = 0; //time between frames in wallpaper
 
 /*Game Vars*/
 
@@ -37,7 +37,7 @@ Game game = Game();
 
 /*Serial Vars*/
 
-uint64_t timerSerial = 0;
+uint32_t timerSerial = 0;
 
 /*Wallpaper Functions*/
 
