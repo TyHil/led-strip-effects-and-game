@@ -42,7 +42,7 @@ bool Player::right() {
 }
 
 bool Player::shoot(CRGB leds[]) {
-  if (millis() - timeShoot >= 40) {
+  if (millis() - timeShoot >= 750) {
     for (uint8_t i = 0; i < shotLength + 1; i++) { //shot out animation
       if (pos + i < NumLeds - 1) {
         leds[pos + i] = CRGB::Blue;
