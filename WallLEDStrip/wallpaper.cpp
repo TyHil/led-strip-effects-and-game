@@ -105,7 +105,7 @@ void Wallpaper::down(bool inGame, CRGB leds[]) {
     } else if (mode == blue and !inGame) {
       chosenColor->b = max(chosenColor->b - 17, 0);
     } else {
-      brightness = max(brightness - 17, 0);
+      brightness = max(brightness - 17, 17);
       setBrightness(inGame);
     }
     if (!inGame) {
