@@ -123,7 +123,6 @@ void setup() {
   pinMode(SWPin, INPUT);
   digitalWrite(SWPin, HIGH);
   randomSeed(analogRead(12)); //better random
-  pinMode(6, INPUT); //laser sensor input for syncing strobe effect
 }
 void loop() {
 
@@ -150,12 +149,6 @@ void loop() {
   /*Wallpaper*/
 
   else {
-    if (mode == 12 and digitalRead(6)) { //if laser input recieved then sync with other strip
-      color = 0;
-      generalTimer = millis() - 151;
-      flashTime = millis() - 301;
-      delay(90);
-    }
     if (millis() - generalTimer > 150) {
       generalTimer = millis();
       if (resuming) { //set up to resume animation
