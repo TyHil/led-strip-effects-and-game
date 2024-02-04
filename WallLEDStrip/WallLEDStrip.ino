@@ -10,13 +10,15 @@
   Note: Neopixels doesn't have dynamic brightness
 */
 
+#include "input.h"
 #include "game.h"
 #include "wallpaper.h"
 #define DataPin 2
-#define YPin A3
-#define XPin A2
-#define SWPin 4
 CRGB leds[NumLeds];
+
+/* Input */
+
+Input input;
 
 
 
@@ -41,30 +43,6 @@ uint32_t timerSerial = 0;
 
 
 
-/* Inputs */
-
-bool up() {
-  return analogRead(YPin) > 682;
-}
-
-bool down() {
-  return analogRead(YPin) < 341;
-}
-
-bool left() {
-  return analogRead(YPin) > 923;
-}
-
-bool right() {
-  return analogRead(YPin) < 100;
-}
-
-bool click() {
-  return digitalRead(SWPin) == 0;
-}
-
-
-
 /* Setup */
 
 void setup() {
@@ -75,8 +53,7 @@ void setup() {
   Serial.begin(9600); //Serial.println("");
   wallpaper.rgbEffect(false, leds); ///?
   ///wallpaper.rgbEffect(true, leds); ///???
-  pinMode(SWPin, INPUT);
-  digitalWrite(SWPin, HIGH);
+  input = Input();
   randomSeed(analogRead(12)); //better random
 }
 
@@ -87,7 +64,7 @@ void loop() {
   /* Game */
 
   if (millis() - timeWallpaper < 30000) {
-    if (left() or right() < 341 or click()) {
+    if (input.left(true) or input.right(true) or input.click()) {
       timeWallpaper = millis();
     }
 
@@ -102,14 +79,14 @@ void loop() {
       startingGame = false;
     }
 
-    game.run(left(), right(), click(), leds);
+    game.run(input.left(true), input.right(true), input.click(), leds);
 
-    if (up()) {
+    if (input.up(false)) {
       wallpaper.up(true, leds);
-    } else if (down()) {
+    } else if (input.down(false)) {
       wallpaper.down(true, leds);
     }
-    if (up() or down()) {
+    if (input.up(false) or input.down(false)) {
       delay(250);
     }
 
@@ -121,11 +98,11 @@ void loop() {
   /* Wallpaper */
 
   else {
-    wallpaper.run(up(), down(), left(), right(), resuming, leds);
+    wallpaper.run(input.up(false), input.down(false), input.left(false), input.right(false), resuming, leds);
     if (resuming) {
       resuming = 0;
     }
-    if (click()) timeWallpaper = millis();
+    if (input.click()) timeWallpaper = millis();
   }
 
 
