@@ -26,7 +26,7 @@ void Spark::move(int16_t start, int16_t frame, CRGB::HTMLColorCode color, bool c
   if (offScreen) {
     return;
   }
-  if (!cover or frame <= CoverFade) {
+  if (!cover or frame < CoverFade) {
     leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NumLeds, wrap)] = CRGB::Black;
   }
   int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NumLeds, wrap);
@@ -41,7 +41,7 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
   if (offScreen) {
     return;
   }
-  if (!cover or frame <= CoverFade) {
+  if (!cover or frame < CoverFade) {
     leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NumLeds, wrap)] = CRGB::Black;
   }
   int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NumLeds, wrap);
@@ -49,8 +49,8 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
     offScreen = 1;
     return;
   }
-  if (fade and frame > CoverFade) {
-    float fadeAmount = ((float)(frame - CoverFade) / (float)(MaxFrames - CoverFade)) * -1.0 + 1;
+  if (fade and frame >= CoverFade) {
+    float fadeAmount = ((float)(frame - CoverFade + 1) / (float)(MaxFrames - CoverFade)) * -1.0 + 1;
     leds[pos] = CRGB((uint8_t) (color->r * fadeAmount), (uint8_t) (color->g * fadeAmount), (uint8_t) (color->b * fadeAmount));
   } else {
     leds[pos] = *color;
