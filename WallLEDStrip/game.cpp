@@ -146,6 +146,7 @@ Game::Game() {
 void Game::displayLevel(CRGB leds[]) {
   int16_t gap = 0; //adds a gap every 5 leds
   int16_t START = 20;
+  CRGB old = leds[START];
   for (int16_t i = START; i <= enemyCount + START - 4; i++) { //display level
     leds[i + gap] = CRGB::Red;
     FastLED.show();
@@ -171,7 +172,7 @@ void Game::displayLevel(CRGB leds[]) {
       gap--;
       delay(100);
     }
-    leds[i + gap] = CRGB::Green;
+    leds[i + gap] = old;
     FastLED.show();
     delay(100);
   }
