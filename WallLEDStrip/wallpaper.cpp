@@ -6,30 +6,6 @@
 
 
 
-/* Mode */
-
-Mode operator++(Mode& mode) {
-  mode = static_cast<Mode>((mode + 1) % NUM_MODES);
-  return mode;
-}
-Mode operator++(Mode& mode, int) { //postfix operator
-  Mode result = mode;
-  ++mode;
-  return result;
-}
-
-Mode operator--(Mode& mode) {
-  mode = static_cast<Mode>((mode % NUM_MODES) + NUM_MODES - 1);
-  return mode;
-}
-Mode operator--(Mode& mode, int) { //postfix operator
-  Mode result = mode;
-  --mode;
-  return result;
-}
-
-
-
 /* Helper */
 
 byte * Wheel(byte WheelPos) { //Rainbow fuction from NeoPixel library strandtest example code
@@ -54,6 +30,30 @@ byte * Wheel(byte WheelPos) { //Rainbow fuction from NeoPixel library strandtest
 
 int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
+}
+
+
+
+/* Mode */
+
+Mode operator++(Mode& mode) {
+  mode = static_cast<Mode>(mod(mode + 1, NUM_MODES));
+  return mode;
+}
+Mode operator++(Mode& mode, int) { //postfix operator
+  Mode result = mode;
+  ++mode;
+  return result;
+}
+
+Mode operator--(Mode& mode) {
+  mode = static_cast<Mode>(mod(mode - 1, NUM_MODES));
+  return mode;
+}
+Mode operator--(Mode& mode, int) { //postfix operator
+  Mode result = mode;
+  --mode;
+  return result;
 }
 
 
