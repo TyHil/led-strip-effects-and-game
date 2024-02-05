@@ -15,9 +15,17 @@
 #define DataPin 2
 CRGB leds[NumLeds];
 
+
+
 /* Input */
 
 Input input;
+
+
+
+/* Shared Firework for memory */
+
+Firework *firework = new Firework(0, CRGB::Green, 200, true, true);
 
 
 
@@ -25,14 +33,14 @@ Input input;
 
 int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 bool resuming = true; //wallpaper being resumed from game
-Wallpaper wallpaper = Wallpaper(51);
+Wallpaper wallpaper = Wallpaper(51, firework);
 
 
 
 /* Game Vars */
 
 bool startingGame = true; //new game
-Game game;
+Game game = Game(firework);
 
 
 
@@ -51,7 +59,6 @@ void setup() {
   //Needed for RPI
   Serial.begin(9600); //Serial.println("");
   input = Input();
-  game = Game();
   randomSeed(analogRead(12)); //better random
 }
 
@@ -72,7 +79,8 @@ void loop() {
     }
 
     if (startingGame) { //new game
-      Firework(0, CRGB::Green, 200, true, true).run(leds);
+      firework->reset(0, CRGB::Green, 200, true, true);
+      firework->run(leds);
       game.start(leds);
       startingGame = false;
     }
@@ -111,7 +119,7 @@ void loop() {
     timerSerial = millis();
     if (Serial.available() >= 3) {
       uint8_t fade = Serial.read();
-      if (fade and wallpaper.mode != fireworks) {
+      if (fade) {
         bool redGreenBlue = wallpaper.mode == red or wallpaper.mode == green or wallpaper.mode == blue;
         for (
           int16_t i = wallpaper.brightness * !redGreenBlue + 255 * redGreenBlue;

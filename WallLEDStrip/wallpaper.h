@@ -20,8 +20,8 @@ class Wallpaper {
     uint8_t color; //tracking for rgb and strobe progress
     uint32_t timeInput, timeRgb, timeStrobe, timeFirework;
     CRGB *chosenColor;
-    Firework firework;
-    Wallpaper(uint8_t setBrightness);
+    Firework *firework;
+    Wallpaper(uint8_t setBrightness, Firework *setFirework);
     ~Wallpaper();
     void up(bool inGame, CRGB leds[]);
     void down(bool inGame, CRGB leds[]);

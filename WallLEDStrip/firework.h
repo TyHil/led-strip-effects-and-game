@@ -2,6 +2,8 @@
   Firework library header for Fireworks
   Written by Tyler Gordon Hill
 */
+#pragma once
+
 #include <FastLED.h>
 #define NumLeds 300
 
@@ -40,6 +42,8 @@ class Firework {
     Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap);
     Firework(int16_t setPos, CRGB *setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade);
     void reset(int16_t setPos, uint8_t setPower);
+    void reset(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap);
+    void reset(int16_t setPos, CRGB *setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade);
     bool move(CRGB leds[]);
     void run(CRGB leds[]);
 };

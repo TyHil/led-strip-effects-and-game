@@ -60,7 +60,8 @@ Mode operator--(Mode& mode, int) { //postfix operator
 
 /* Wallpaper */
 
-Wallpaper::Wallpaper(uint8_t setBrightness): firework(150, chosenColor, 100, false, false, true) {
+Wallpaper::Wallpaper(uint8_t setBrightness, Firework *setFirework) {
+  firework = setFirework;
   mode = rgb;
   brightness = setBrightness;
   blueLight = 10;
@@ -205,11 +206,11 @@ void Wallpaper::strobeEffect(bool show, CRGB leds[]) {
 void Wallpaper::fireworkEffect(bool show, CRGB leds[]) {
   if (millis() - timeFirework >= 250) { //reset
     for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB::Black;
-    firework.reset(random(0, NumLeds), random(10, 41));
+    firework->reset(random(0, NumLeds), chosenColor, random(10, 41), false, false, true);
   }
   timeFirework = millis();
-  if (firework.move(leds)) {
-    firework.reset(random(0, NumLeds), random(50, 151));
+  if (firework->move(leds)) {
+    firework->reset(random(0, NumLeds), random(10, 41));
   }
   if (show) {
     FastLED.show();

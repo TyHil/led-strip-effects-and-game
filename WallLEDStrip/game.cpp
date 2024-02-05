@@ -3,7 +3,6 @@
   Written by Tyler Gordon Hill
 */
 #include "game.h"
-#include "firework.h"
 
 
 
@@ -86,7 +85,6 @@ void Player::gravestone(uint8_t enemyCount, CRGB leds[]) {
 }
 
 void Player::death(uint8_t enemyCount, CRGB leds[]) {
-  Firework(pos, CRGB::Green, 200, true, true).run(leds);
   enemyCountAtDeath = enemyCount;
   posAtDeath = pos;
 }
@@ -134,7 +132,8 @@ void Enemy::display(CRGB leds[]) {
 
 /* Game */
 
-Game::Game() {
+Game::Game(Firework *setFirework) {
+  firework = setFirework;
   enemyCount = 4;
   timeEnemyMove = millis();
   player = Player();
@@ -223,6 +222,8 @@ void Game::shoot(CRGB leds[]) {
 void Game::deathCheck(CRGB leds[]) { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemyCount; i++) {
     if (player.pos == enemies[i].pos) {
+      firework->reset(player.pos, CRGB::Green, 200, true, true);
+      firework->run(leds);
       player.death(enemyCount, leds);
       start(leds);
       break;
@@ -262,7 +263,8 @@ void Game::winCheck(CRGB leds[]) {
     enemyCount++;
     player.adjustShotLength(enemyCount);
     enemyReset();
-    Firework(NumLeds - 1, CRGB::Blue, 200, true, true).run(leds);
+    firework->reset(NumLeds - 1, CRGB::Blue, 200, true, true);
+    firework->run(leds);
     displayLevel(leds);
     player.reset(enemyCount);
     player.display(leds);
