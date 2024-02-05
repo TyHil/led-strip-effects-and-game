@@ -37,7 +37,7 @@ int16_t mod(int16_t x, int16_t y) {
 /* Mode */
 
 Mode operator++(Mode& mode) {
-  mode = static_cast<Mode>(mod(mode + 1, NUM_MODES));
+  mode = static_cast<Mode>(min(mode + 1, NUM_MODES - 1));
   return mode;
 }
 Mode operator++(Mode& mode, int) { //postfix operator
@@ -47,7 +47,7 @@ Mode operator++(Mode& mode, int) { //postfix operator
 }
 
 Mode operator--(Mode& mode) {
-  mode = static_cast<Mode>(mod(mode - 1, NUM_MODES));
+  mode = static_cast<Mode>(max(mode - 1, 0));
   return mode;
 }
 Mode operator--(Mode& mode, int) { //postfix operator
