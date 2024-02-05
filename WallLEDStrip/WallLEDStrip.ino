@@ -135,6 +135,9 @@ void loop() {
       Serial.write(buf, 5);
       wallpaper.brightness = Serial.read();
       wallpaper.mode = static_cast<Mode>(Serial.read());
+      if (wallpaper.mode == white) {
+        wallpaper.blueLight = 5;
+      }
       if (Serial.available() >= 3) {
         wallpaper.chosenColor->r = Serial.read();
         wallpaper.chosenColor->g = Serial.read();
