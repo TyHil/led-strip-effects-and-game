@@ -156,12 +156,10 @@ void Wallpaper::fillDisplay(bool show, CRGB leds[]) {
     setColor = CRGB(255, 255, mode * 25.5);
   } else if (mode == red or mode == green or mode == blue) {
     setColor = CRGB(chosenColor->r * (mode == red), chosenColor->g * (mode == green), chosenColor->b * (mode == blue));
-  } else if (mode == color) {
-    setColor = *chosenColor;
   }
-  if (mode == white or mode == strobe or mode == red or mode == green or mode == blue or mode == color) {
+  if (mode == white or mode == strobe or mode == red or mode == green or mode == blue or mode == chosen) {
     for (uint16_t i = 0; i < NumLeds; i++) {
-      leds[i] = setColor;
+      leds[i] = mode == chosen ? *chosenColor : setColor;
     }
     if (show) {
       FastLED.show();

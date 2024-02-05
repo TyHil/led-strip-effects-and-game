@@ -10,7 +10,7 @@
 #define RgbStartLed 146 //0 to (NumLeds - 1)
 #define RgbEndLed 299 //0 to (NumLeds - 1)
 
-enum Mode { white, rgb, strobe, red, green, blue, color, fireworks, NUM_MODES };
+enum Mode { white, rgb, strobe, red, green, blue, chosen, fireworks, NUM_MODES };
 
 class Wallpaper {
   public:
