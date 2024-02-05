@@ -1,7 +1,6 @@
 /*
   Desk light WS2812B LED strip control for Arduino Nano with white light (with blue
-  light adjustment), RGB rainbow effect, strobe effect, and specific color choice
-  that syncs with the wall code by sending laser pulses.
+  light adjustment), RGB rainbow effect, strobe effect, and specific color choice.
   Written by Tyler Hill
   Version 3.0
   Remote Codes:
@@ -52,7 +51,6 @@ void setup() {
   //Serial.begin(9600); //Serial.println("");
   irrecv.enableIRIn();
   FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
-  pinMode(6, OUTPUT); //attached to laser for communication with another LED strip
 }
 void loop() {
   if (irrecv.decode(&results)) {
@@ -108,11 +106,6 @@ void loop() {
   if (mode == 12 and power and millis() - flashTime > 250) { //strobe effect
     flashTime = millis();
     if (!fade) color = (color + 1) % 3;
-    if (color == 1) {
-      digitalWrite(6, HIGH); //send laser pulse when green
-      delay(10);
-      digitalWrite(6, LOW); // turn off when blue
-    }
     for (uint8_t i = 0; i < NumLeds; i++) leds[i] = CRGB(255 * (color == 0), 255 * (color == 1), 255 * (color == 2));
     if (!fade) FastLED.show();
   }

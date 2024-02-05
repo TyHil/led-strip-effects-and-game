@@ -63,10 +63,10 @@ void Spark::move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fad
 
 Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap) {
   codeColor = setColor;
+  colorType = HTMLColorCode;
   cover = setCover;
   wrap = setWrap;
   fade = false;
-  color = 0;
   for (uint8_t i = 0; i < NumSparks; i++) {
     sparks[i] = Spark();
   }
@@ -75,10 +75,10 @@ Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPowe
 
 Firework::Firework(int16_t setPos, CRGB *setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade) {
   constructorColor = setColor;
+  colorType = ObjectPointer;
   cover = setCover;
   wrap = setWrap;
   fade = setFade;
-  color = 1;
   for (uint8_t i = 0; i < NumSparks; i++) {
     sparks[i] = Spark();
   }
@@ -94,10 +94,28 @@ void Firework::reset(int16_t setPos, uint8_t setPower) {
   }
 }
 
+void Firework::reset(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap) {
+  codeColor = setColor;
+  colorType = HTMLColorCode;
+  cover = setCover;
+  wrap = setWrap;
+  fade = false;
+  reset(setPos, setPower);
+}
+
+void Firework::reset(int16_t setPos, CRGB *setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade) {
+  constructorColor = setColor;
+  colorType = ObjectPointer;
+  cover = setCover;
+  wrap = setWrap;
+  fade = setFade;
+  reset(setPos, setPower);
+}
+
 bool Firework::move(CRGB leds[]) {
   uint8_t sparksOffScreen = 0;
   for (uint8_t i = 0; i < NumSparks; i++) {
-    if (color) {
+    if (colorType == ObjectPointer) {
       sparks[i].move(pos, frame, constructorColor, cover, fade, wrap, leds);
     } else {
       sparks[i].move(pos, frame, codeColor, cover, fade, wrap, leds);
@@ -110,7 +128,7 @@ bool Firework::move(CRGB leds[]) {
 void Firework::run(CRGB leds[]) {
   for (frame = 0; frame < MaxFrames; frame++) {
     for (int i = 0; i < NumSparks; i++) {
-      if (color) {
+      if (colorType == ObjectPointer) {
         sparks[i].move(pos, frame, constructorColor, cover, fade, wrap, leds);
       } else {
         sparks[i].move(pos, frame, codeColor, cover, fade, wrap, leds);

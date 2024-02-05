@@ -5,6 +5,8 @@
 #include <FastLED.h>
 #define NumLeds 300
 
+#include "firework.h"
+
 #define MaxEnemies 23
 
 class Player {
@@ -43,7 +45,8 @@ class Game {
     Enemy enemies[23];
     uint8_t enemyCount; //number of enemies
     uint32_t timeEnemyMove; //how often enemies move
-    Game();
+    Firework *firework;
+    Game(Firework *setFirework);
     void displayLevel(CRGB leds[]);
     void start(CRGB leds[]);
     void left(CRGB leds[]);
