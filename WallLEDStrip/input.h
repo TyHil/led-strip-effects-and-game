@@ -1,5 +1,5 @@
 /*
-  Game library header for Wall LED Strip
+  Input library header for Wall LED Strip
   Written by Tyler Gordon Hill
 */
 #define YPin A3

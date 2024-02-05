@@ -1,5 +1,5 @@
 /*
-  Game library header for Wall LED Strip
+  Game library implementation for Wall LED Strip
   Written by Tyler Gordon Hill
 */
 #include "game.h"

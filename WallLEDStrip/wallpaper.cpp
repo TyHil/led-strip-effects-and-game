@@ -1,5 +1,5 @@
 /*
-  Wallpaper library header for Wall LED Strip
+  Wallpaper library implementation for Wall LED Strip
   Written by Tyler Gordon Hill
 */
 #include "wallpaper.h"
