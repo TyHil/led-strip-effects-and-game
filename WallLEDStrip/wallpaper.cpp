@@ -90,7 +90,7 @@ void Wallpaper::up(bool inGame, CRGB leds[]) {
       setBrightness(inGame);
     }
     if (!inGame) {
-      display(true, false, leds);
+      display(true, true, leds);
     }
   }
 }
@@ -109,7 +109,7 @@ void Wallpaper::down(bool inGame, CRGB leds[]) {
       setBrightness(inGame);
     }
     if (!inGame) {
-      display(true, false, leds);
+      display(true, true, leds);
     }
   }
 }
@@ -123,7 +123,7 @@ void Wallpaper::left(CRGB leds[]) {
       mode--;
     }
     setBrightness(false);
-    display(true, false, leds);
+    display(true, true, leds);
   }
 }
 
@@ -136,7 +136,7 @@ void Wallpaper::right(CRGB leds[]) {
       mode++;
     }
     setBrightness(false);
-    display(true, false, leds);
+    display(true, true, leds);
   }
 }
 
@@ -218,8 +218,7 @@ void Wallpaper::fireworkEffect(bool show, CRGB leds[]) {
   }
 }
 
-void Wallpaper::display(bool show, bool bypass, CRGB leds[]) {
-  fillDisplay(show, leds);
+void Wallpaper::effects(bool show, bool bypass, CRGB leds[]) {
   if (mode == rgb) {
     if (bypass or millis() - timeRgb >= 150) {
       timeRgb = millis();
@@ -237,6 +236,11 @@ void Wallpaper::display(bool show, bool bypass, CRGB leds[]) {
   }
 }
 
+void Wallpaper::display(bool show, bool bypass, CRGB leds[]) {
+  fillDisplay(show, leds);
+  effects(show, bypass, leds);
+}
+
 void Wallpaper::run(bool _up, bool _down, bool _left, bool _right, bool resuming, CRGB leds[]) {
   if (_up) {
     up(false, leds);
@@ -250,7 +254,10 @@ void Wallpaper::run(bool _up, bool _down, bool _left, bool _right, bool resuming
   if (_right) {
     right(leds);
   }
-  display(!resuming, resuming, leds);
+  if (resuming) {
+    fillDisplay(false, leds);
+  }
+  effects(!resuming, resuming, leds);
   if (resuming) {
     bool redGreenBlue = mode == red or mode == green or mode == blue;
     for (

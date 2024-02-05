@@ -32,6 +32,7 @@ class Wallpaper {
     void rgbEffect(bool show, CRGB leds[]);
     void strobeEffect(bool show, CRGB leds[]);
     void fireworkEffect(bool show, CRGB leds[]);
+    void effects(bool show, bool bypass, CRGB leds[]);
     void display(bool show, bool bypass, CRGB leds[]);
     void run(bool _up, bool _down, bool _left, bool _right, bool resuming, CRGB leds[]);
 };
