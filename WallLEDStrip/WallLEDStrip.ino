@@ -1,10 +1,9 @@
 /*
   Wall mounted WS2812B LED strip control for Arduino Nano with white light (with blue
-  light adjustment), RGB rainbow effect, strobe effect, and specific color choice that
-  syncs with the desk light code through a laser sensor. There is also a joystick
-  controlled game in which the player, a green pixel that can shoot a couple pixels
-  ahead of itself, moves from the beginning of the strip to the end through an ever
-  growing field of enemies as the game progresses.
+  light adjustment), RGB rainbow effect, strobe effect, and specific color choice.
+  There is also a joystick controlled game in which the player, a green pixel that
+  can shoot a couple pixels ahead of itself, moves from the beginning of the strip to
+  the end through an ever growing field of enemies as the game progresses.
   Written by Tyler Hill
   Version 6.0
   Note: Neopixels doesn't have dynamic brightness
@@ -25,7 +24,7 @@ Input input;
 /* Wallpaper Vars */
 
 int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
-bool resuming = 1; //wallpaper being resumed from game
+bool resuming = true; //wallpaper being resumed from game
 Wallpaper wallpaper = Wallpaper(51);
 
 
@@ -33,7 +32,7 @@ Wallpaper wallpaper = Wallpaper(51);
 /* Game Vars */
 
 bool startingGame = true; //new game
-Game game = Game();
+Game game;
 
 
 
@@ -51,9 +50,8 @@ void setup() {
   FastLED.show();
   //Needed for RPI
   Serial.begin(9600); //Serial.println("");
-  wallpaper.rgbEffect(false, leds); ///?
-  ///wallpaper.rgbEffect(true, leds); ///???
   input = Input();
+  game = Game();
   randomSeed(analogRead(12)); //better random
 }
 
@@ -70,7 +68,7 @@ void loop() {
 
     if (!resuming and !startingGame) FastLED.clear(); //normal frame
     if (!resuming) { //for going back to wallpaper
-      resuming = 1;
+      resuming = true;
     }
 
     if (startingGame) { //new game
@@ -100,7 +98,7 @@ void loop() {
   else {
     wallpaper.run(input.up(false), input.down(false), input.left(false), input.right(false), resuming, leds);
     if (resuming) {
-      resuming = 0;
+      resuming = false;
     }
     if (input.click()) timeWallpaper = millis();
   }
@@ -134,15 +132,15 @@ void loop() {
         wallpaper.chosenColor->g = Serial.read();
         wallpaper.chosenColor->b = Serial.read();
       }
-      /*Serial.print(brightness);
+      /*Serial.print(wallpaper.brightness);
       Serial.print(",");
-      Serial.print(mode);
+      Serial.print(wallpaper.mode);
       Serial.print(",");
-      Serial.print(chosenColor->r);
+      Serial.print(wallpaper.chosenColor->r);
       Serial.print(",");
-      Serial.print(chosenColor->g);
+      Serial.print(wallpaper.chosenColor->g);
       Serial.print(",");
-      Serial.print(chosenColor->b);
+      Serial.print(wallpaper.chosenColor->b);
       Serial.println();*/
       if (fade) {
         timeWallpaper = millis() - 30000;
