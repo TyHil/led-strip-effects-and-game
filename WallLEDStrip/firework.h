@@ -21,6 +21,11 @@ class Spark {
     void move(int16_t start, int16_t frame, CRGB *color, bool cover, bool fade, bool wrap, CRGB leds[]);
 };
 
+enum ColorType : bool {
+  HTMLColorCode = true,
+  ObjectPointer = false,
+};
+
 class Firework {
   public:
     int16_t pos;
@@ -28,7 +33,7 @@ class Firework {
     bool randomColors;
     CRGB::HTMLColorCode codeColor;
     CRGB *constructorColor;
-    bool color;
+    ColorType colorType;
     Spark sparks[NumSparks];
     bool cover, wrap, fade;
     uint8_t power;
