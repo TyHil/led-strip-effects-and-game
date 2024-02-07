@@ -2,9 +2,9 @@
   Input library header for Wall LED Strip
   Written by Tyler Gordon Hill
 */
-#define YPin A3
-#define XPin A2
-#define SWPin 4
+#define Y_PIN A3
+#define X_PIN A2
+#define SW_PIN 4
 
 class Input {
   public:

@@ -3,11 +3,11 @@
   Written by Tyler Gordon Hill
 */
 #include <FastLED.h>
-#define NumLeds 300
+#define NUM_LEDS 300
 
 #include "firework.h"
 
-#define MaxEnemies 23
+#define MAX_ENEMIES 23
 
 class Player {
   public:

@@ -5,11 +5,11 @@
 #pragma once
 
 #include <FastLED.h>
-#define NumLeds 300
+#define NUM_LEDS 300
 
-#define NumSparks 50
-#define MaxFrames 150
-#define CoverFade 80
+#define NUM_SPARKS 50
+#define MAX_FRAMES 150
+#define COVER_FADE 80
 
 class Spark {
    public:
@@ -36,7 +36,7 @@ class Firework {
     CRGB::HTMLColorCode codeColor;
     CRGB *constructorColor;
     ColorType colorType;
-    Spark sparks[NumSparks];
+    Spark sparks[NUM_SPARKS];
     bool cover, wrap, fade;
     uint8_t power;
     Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap);

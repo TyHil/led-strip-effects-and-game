@@ -3,12 +3,12 @@
   Written by Tyler Gordon Hill
 */
 #include <FastLED.h>
-#define NumLeds 300
+#define NUM_LEDS 300
 
 #include "firework.h"
 
-#define RgbStartLed 146 //0 to (NumLeds - 1)
-#define RgbEndLed 299 //0 to (NumLeds - 1)
+#define RGB_START_LED 146 //0 to (NUM_LEDS - 1)
+#define RGB_END_LED 299 //0 to (NUM_LEDS - 1)
 
 enum Mode { white, rgb, strobe, red, green, blue, chosen, fireworks, NUM_MODES };
 

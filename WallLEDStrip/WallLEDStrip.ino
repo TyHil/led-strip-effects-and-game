@@ -12,8 +12,8 @@
 #include "input.h"
 #include "game.h"
 #include "wallpaper.h"
-#define DataPin 2
-CRGB leds[NumLeds];
+#define DATA_PIN 2
+CRGB leds[NUM_LEDS];
 
 
 
@@ -53,7 +53,7 @@ uint32_t timerSerial = 0;
 /* Setup */
 
 void setup() {
-  FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
+  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
   FastLED.clear();
   FastLED.show();
   //Needed for RPI

@@ -157,7 +157,7 @@ void Wallpaper::fillDisplay(bool show, CRGB leds[]) {
     setColor = CRGB(chosenColor->r * (mode == red), chosenColor->g * (mode == green), chosenColor->b * (mode == blue));
   }
   if (mode == white or mode == red or mode == green or mode == blue or mode == chosen) {
-    for (uint16_t i = 0; i < NumLeds; i++) {
+    for (uint16_t i = 0; i < NUM_LEDS; i++) {
       leds[i] = mode == chosen ? *chosenColor : setColor;
     }
     if (show) {
@@ -171,19 +171,19 @@ void Wallpaper::rgbEffect(bool show, CRGB leds[]) {
   color = mod(color - 1, 256);
   bool increasingContinue = true;
   bool decreasingContinue = true;
-  for (uint16_t i = 0; i <= max(abs(RgbStartLed - RgbEndLed), NumLeds - abs(RgbStartLed - RgbEndLed)); i++) {
-    c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255); //& works as a form of mod
+  for (uint16_t i = 0; i <= max(abs(RGB_START_LED - RGB_END_LED), NUM_LEDS - abs(RGB_START_LED - RGB_END_LED)); i++) {
+    c = Wheel((((uint16_t)i * 256 / NUM_LEDS) + color) & 255); //& works as a form of mod
     if (increasingContinue) {
-      uint16_t increasing = mod(RgbStartLed + i, NumLeds);
+      uint16_t increasing = mod(RGB_START_LED + i, NUM_LEDS);
       leds[increasing] = CRGB(*c, *(c + 1), *(c + 2));
-      if (increasing == RgbEndLed) {
+      if (increasing == RGB_END_LED) {
         increasingContinue = false;
       }
     }
     if (decreasingContinue) {
-      uint16_t decreasing = mod(RgbStartLed - i, NumLeds);
-      leds[mod(RgbStartLed - i, NumLeds)] = CRGB(*c, *(c + 1), *(c + 2));
-      if (decreasing == RgbEndLed) {
+      uint16_t decreasing = mod(RGB_START_LED - i, NUM_LEDS);
+      leds[mod(RGB_START_LED - i, NUM_LEDS)] = CRGB(*c, *(c + 1), *(c + 2));
+      if (decreasing == RGB_END_LED) {
         decreasingContinue = false;
       }
     }
@@ -195,7 +195,7 @@ void Wallpaper::rgbEffect(bool show, CRGB leds[]) {
 
 void Wallpaper::strobeEffect(bool show, CRGB leds[]) {
   color = (color + 1) % 3;
-  for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB(255 * (color == 0), 255 * (color == 1), 255 * (color == 2));
+  for (uint16_t i = 0; i < NUM_LEDS; i++) leds[i] = CRGB(255 * (color == 0), 255 * (color == 1), 255 * (color == 2));
   if (show) {
     FastLED.show();
   }
@@ -203,12 +203,12 @@ void Wallpaper::strobeEffect(bool show, CRGB leds[]) {
 
 void Wallpaper::fireworkEffect(bool show, CRGB leds[]) {
   if (millis() - timeFirework >= 250) { //reset
-    for (uint16_t i = 0; i < NumLeds; i++) leds[i] = CRGB::Black;
-    firework->reset(random(0, NumLeds), chosenColor, random(10, 41), false, false, true);
+    for (uint16_t i = 0; i < NUM_LEDS; i++) leds[i] = CRGB::Black;
+    firework->reset(random(0, NUM_LEDS), chosenColor, random(10, 41), false, false, true);
   }
   timeFirework = millis();
   if (firework->move(leds)) {
-    firework->reset(random(0, NumLeds), random(10, 41));
+    firework->reset(random(0, NUM_LEDS), random(10, 41));
   }
   if (show) {
     FastLED.show();

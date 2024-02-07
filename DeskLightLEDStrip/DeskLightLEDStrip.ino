@@ -11,10 +11,10 @@
 */
 #include <IRremote.h>
 #include <FastLED.h>
-#define NumLeds 131
-#define DataPin 2
+#define NUM_LEDS 131
+#define DATA_PIN 2
 bool power = 0, fade = 0; //power starts off, fade in from off
-CRGB leds[NumLeds], chosenColor = CRGB(136, 136, 136);
+CRGB leds[NUM_LEDS], chosenColor = CRGB(136, 136, 136);
 IRrecv irrecv(3);
 decode_results results;
 uint8_t brightness = 17, mode = 10, color; //brightness, effect mode: blue light amount/rainbow/strobe mode/chosen color, rainbow and strobe color
@@ -45,12 +45,12 @@ void update() { //set all to correct brightness and blue light value
   if (mode <= 10) setColor = CRGB(255, 255, mode * 25.5);
   else if (mode > 12 and  mode < 16) setColor = CRGB(chosenColor.r * (mode == 13), chosenColor.g * (mode == 14), chosenColor.b * (mode == 15));
   else if (mode == 16) setColor = chosenColor;
-  if (mode != 11 and mode != 12) for (uint8_t i = 0; i < NumLeds; i++) leds[i] = setColor;
+  if (mode != 11 and mode != 12) for (uint8_t i = 0; i < NUM_LEDS; i++) leds[i] = setColor;
 }
 void setup() {
   //Serial.begin(9600); //Serial.println("");
   irrecv.enableIRIn();
-  FastLED.addLeds<WS2812B, DataPin, GRB>(leds, NumLeds);
+  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
 }
 void loop() {
   if (irrecv.decode(&results)) {
@@ -97,16 +97,16 @@ void loop() {
     byte *c;
     color = (color + 5) % 256;
     for (uint8_t i = 0; i <= 66; i++) {
-      c = Wheel((((uint16_t)i * 256 / NumLeds) + color) & 255); //& works as a form of mod
+      c = Wheel((((uint16_t)i * 256 / NUM_LEDS) + color) & 255); //& works as a form of mod
       leds[i] = CRGB(*c, *(c + 1), *(c + 2));
-      if (2 * 66 - i < NumLeds) leds[2 * 66 - i] = CRGB(*c, *(c + 1), *(c + 2));
+      if (2 * 66 - i < NUM_LEDS) leds[2 * 66 - i] = CRGB(*c, *(c + 1), *(c + 2));
     }
     if (!fade) FastLED.show();
   }
   if (mode == 12 and power and millis() - flashTime > 250) { //strobe effect
     flashTime = millis();
     if (!fade) color = (color + 1) % 3;
-    for (uint8_t i = 0; i < NumLeds; i++) leds[i] = CRGB(255 * (color == 0), 255 * (color == 1), 255 * (color == 2));
+    for (uint8_t i = 0; i < NUM_LEDS; i++) leds[i] = CRGB(255 * (color == 0), 255 * (color == 1), 255 * (color == 2));
     if (!fade) FastLED.show();
   }
   if (fade) { //fade in
