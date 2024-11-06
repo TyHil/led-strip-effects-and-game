@@ -157,6 +157,7 @@ void loop() {
         timeWallpaper = millis() - 30000;
         resuming = 1;
       } else {
+        wallpaper.setBrightness(false);
         wallpaper.display(true, true, leds);
       }
     }
