@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Format
-        uses: DoozyX/clang-format-lint-action@v0.17
+        uses: DoozyX/clang-format-lint-action@v0.18.2
         with:
           source: "WallLEDStrip"
           extensions: "cpp,h,ino"
