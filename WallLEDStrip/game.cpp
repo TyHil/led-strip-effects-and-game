@@ -43,17 +43,13 @@ bool Player::right() {
 bool Player::shoot(CRGB leds[]) {
   if (millis() - timeShoot >= 750) {
     for (uint8_t i = 0; i < shotLength + 1; i++) { //shot out animation
-      if (pos + i < NUM_LEDS - 1) {
-        leds[pos + i] = CRGB::Blue;
-      }
+      if (pos + i < NUM_LEDS - 1) leds[pos + i] = CRGB::Blue;
       FastLED.show();
       delay(50);
     }
     delay(50);
     for (uint8_t i = shotLength; i > 0; i--) { //shot in animation
-      if (pos + i < NUM_LEDS - 1) {
-        leds[pos + i] = CRGB::Black;
-      }
+      if (pos + i < NUM_LEDS - 1) leds[pos + i] = CRGB::Black;
       FastLED.show();
       delay(50);
     }
@@ -65,23 +61,16 @@ bool Player::shoot(CRGB leds[]) {
 }
 
 void Player::adjustShotLength(uint8_t enemyCount) { //shot length gets bigger after a point
-  if (enemyCount < 9) {
-    shotLength = 2;
-  } else {
-    shotLength = 3;
-  }
+  if (enemyCount < 9) shotLength = 2;
+  else shotLength = 3;
 }
 
 void Player::gravestone(uint8_t enemyCount, int16_t location, CRGB leds[]) {
-  if (enemyCount == enemyCountAtDeath and location == posAtDeath){
-    leds[location] = CRGB(20, 20, 20);
-  }
+  if (enemyCount == enemyCountAtDeath and location == posAtDeath) leds[location] = CRGB(20, 20, 20);
 }
 
 void Player::gravestone(uint8_t enemyCount, CRGB leds[]) {
-  if (enemyCount == enemyCountAtDeath){
-    leds[posAtDeath] = CRGB(20, 20, 20);
-  }
+  if (enemyCount == enemyCountAtDeath) leds[posAtDeath] = CRGB(20, 20, 20);
 }
 
 void Player::death(uint8_t enemyCount, CRGB leds[]) {
@@ -111,35 +100,27 @@ void Enemy::move(int16_t playerPos) {
   if (pos != -1) {
     uint8_t r = random(0, 4); //1/2 chance move forward except always charge player
     bool forward = r == 0 or r == 1;
-    for (uint8_t i = 1; i < 6 and !forward; i++) {
-      forward = pos - i == playerPos;
-    }
-    if (forward and pos != 0) {
-      pos--;
-    } else if (r == 2 and pos < NUM_LEDS - 2) { //1/4 chance move back
+    for (uint8_t i = 1; i < 6 and !forward; i++) forward = pos - i == playerPos;
+    if (forward and pos != 0) pos--;
+    else if (r == 2 and pos < NUM_LEDS - 2) //1/4 chance move back
       pos++;
-    }
   }
 }
 
 void Enemy::display(CRGB leds[]) {
-  if (pos != -1) {
-    leds[pos] = CRGB::Red;
-  }
+  if (pos != -1) leds[pos] = CRGB::Red;
 }
 
 
 
 /* Game */
 
-Game::Game(Firework *setFirework) {
+Game::Game(Firework * setFirework) {
   firework = setFirework;
   enemyCount = 4;
   timeEnemyMove = millis();
   player = Player();
-  for (uint8_t i = 0; i < MAX_ENEMIES; i++) {
-    enemies[i] = Enemy();
-  }
+  for (uint8_t i = 0; i < MAX_ENEMIES; i++) enemies[i] = Enemy();
 }
 
 void Game::displayLevel(CRGB leds[]) {
@@ -178,9 +159,8 @@ void Game::displayLevel(CRGB leds[]) {
 }
 
 void Game::start(CRGB leds[]) {
-  if (enemyCount > 4) { //if not on first level
+  if (enemyCount > 4) //if not on first level
     displayLevel(leds); //display level beaten
-  }
 
   enemyCount = 4;
   enemyReset();
@@ -198,24 +178,17 @@ void Game::start(CRGB leds[]) {
 }
 
 void Game::left(CRGB leds[]) {
-  if (player.left()) {
-    deathCheck(leds);
-  }
+  if (player.left()) deathCheck(leds);
 }
 
 void Game::right(CRGB leds[]) {
-  if (player.right()) {
-    deathCheck(leds);
-  }
+  if (player.right()) deathCheck(leds);
 }
 
 void Game::shoot(CRGB leds[]) {
   if (player.shoot(leds)) {
-    for (uint8_t i = player.shotLength; i > 0; i--) { //check for hits
-      if (player.pos + i < NUM_LEDS - 1) {
-        enemyDeathCheck(player.pos + i);
-      }
-    }
+    for (uint8_t i = player.shotLength; i > 0; i--) //check for hits
+      if (player.pos + i < NUM_LEDS - 1) enemyDeathCheck(player.pos + i);
   }
 }
 
@@ -232,11 +205,8 @@ void Game::deathCheck(CRGB leds[]) { //checks if any enemies are on top of the p
 }
 
 void Game::enemyDeathCheck(int16_t pos) { //checks if any enemies are on top of the player
-  for (uint8_t i = 0; i < enemyCount; i++) {
-    if (pos == enemies[i].pos) {
-      enemies[i].reset(-1);
-    }
-  }
+  for (uint8_t i = 0; i < enemyCount; i++)
+    if (pos == enemies[i].pos) enemies[i].reset(-1);
 }
 
 void Game::enemyReset() {
@@ -245,11 +215,9 @@ void Game::enemyReset() {
 }
 
 void Game::enemyMove(CRGB leds[]) {
-  if (millis() - timeEnemyMove >= (uint32_t) (250 - 10 * (enemyCount - 4))) {
+  if (millis() - timeEnemyMove >= (uint32_t)(250 - 10 * (enemyCount - 4))) {
     timeEnemyMove = millis();
-    for (uint8_t i = 0; i < enemyCount; i++) {
-      enemies[i].move(player.pos);
-    }
+    for (uint8_t i = 0; i < enemyCount; i++) enemies[i].move(player.pos);
     deathCheck(leds);
   }
 }
@@ -302,15 +270,9 @@ void Game::display(CRGB leds[]) {
 }
 
 void Game::run(bool _left, bool _right, bool _shoot, CRGB leds[]) {
-  if (_left) {
-    left(leds);
-  }
-  if (_right) {
-    right(leds);
-  }
-  if (_shoot) {
-    shoot(leds);
-  }
+  if (_left) left(leds);
+  if (_right) right(leds);
+  if (_shoot) shoot(leds);
   enemyMove(leds);
   display(leds);
   winCheck(leds);

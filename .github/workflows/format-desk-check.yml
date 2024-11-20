@@ -1,4 +1,4 @@
-name: Format V2 Check
+name: Format Desk Check
 
 on: 
   push:

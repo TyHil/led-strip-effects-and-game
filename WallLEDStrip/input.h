@@ -7,11 +7,11 @@
 #define SW_PIN 4
 
 class Input {
-  public:
-    Input();
-    bool up(bool sensitive = false);
-    bool down(bool sensitive = false);
-    bool left(bool sensitive = false);
-    bool right(bool sensitive = false);
-    bool click();
+public:
+  Input();
+  bool up(bool sensitive = false);
+  bool down(bool sensitive = false);
+  bool left(bool sensitive = false);
+  bool right(bool sensitive = false);
+  bool click();
 };

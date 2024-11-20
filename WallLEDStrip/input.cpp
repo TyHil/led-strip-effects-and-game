@@ -2,8 +2,8 @@
   Input library implementation for Wall LED Strip
   Written by Tyler Gordon Hill
 */
-#include <Arduino.h>
 #include "input.h"
+#include <Arduino.h>
 
 
 
