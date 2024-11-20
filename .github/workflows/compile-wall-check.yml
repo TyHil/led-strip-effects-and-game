@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - WallLEDStrip/**
+      - .github/workflows/compile-wall-check.yml
 
 jobs:
   main:

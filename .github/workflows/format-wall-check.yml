@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - WallLEDStrip/**
+      - .github/workflows/format-wall-check.yml
 
 jobs:
   main:

@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - DeskLightLEDStrip/**
+      - .github/workflows/format-desk-check.yml
 
 jobs:
   main:

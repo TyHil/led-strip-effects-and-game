@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - HeadlampLEDStrip/**
+      - .github/workflows/format-headlamp-check.yml
 
 jobs:
   main:
