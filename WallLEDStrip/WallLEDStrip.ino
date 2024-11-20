@@ -115,50 +115,60 @@ void loop() {
 
   /* Serial */
 
-  if (millis() - timerSerial > 250) {
+  if (millis() - timerSerial > 100) {
     timerSerial = millis();
-    if (Serial.available() >= 3) {
-      uint8_t fade = Serial.read();
-      if (fade) {
-        bool redGreenBlue = wallpaper.mode == red or wallpaper.mode == green or wallpaper.mode == blue;
-        for (
-          int16_t i = wallpaper.brightness * !redGreenBlue + 255 * redGreenBlue;
-          i >= 0;
-          i -= (wallpaper.brightness / 17) * !redGreenBlue + 17 * redGreenBlue
-        ) {
-          FastLED.setBrightness(i); //won't work with show(i)
-          FastLED.show();
-          delay(40);
-        }
+    if (Serial.available() >= 4) {
+      //fade, brightness, mode[, R, G, B], checkSum
+      uint8_t read[7];
+      uint8_t amount = Serial.readBytes(read, 7);
+      uint16_t sum = 0;
+      for (uint8_t i = 0; i < amount - 1; i++) {
+        sum += read[i];
       }
-      uint8_t buf[] = {wallpaper.brightness, wallpaper.mode, wallpaper.chosenColor->r, wallpaper.chosenColor->g, wallpaper.chosenColor->b};
-      Serial.write(buf, 5);
-      wallpaper.brightness = Serial.read();
-      wallpaper.mode = static_cast<Mode>(Serial.read());
-      if (wallpaper.mode == white) {
-        wallpaper.blueLight = 5;
-      }
-      if (Serial.available() >= 3) {
-        wallpaper.chosenColor->r = Serial.read();
-        wallpaper.chosenColor->g = Serial.read();
-        wallpaper.chosenColor->b = Serial.read();
-      }
-      /*Serial.print(wallpaper.brightness);
-      Serial.print(",");
-      Serial.print(wallpaper.mode);
-      Serial.print(",");
-      Serial.print(wallpaper.chosenColor->r);
-      Serial.print(",");
-      Serial.print(wallpaper.chosenColor->g);
-      Serial.print(",");
-      Serial.print(wallpaper.chosenColor->b);
-      Serial.println();*/
-      if (fade) {
-        timeWallpaper = millis() - 30000;
-        resuming = 1;
+      if (amount < 4 || sum % 256 != read[amount - 1]) {
+        Serial.write(0);
       } else {
-        wallpaper.setBrightness(false);
-        wallpaper.display(true, true, leds);
+        uint8_t current[] = {255, wallpaper.brightness, wallpaper.mode, wallpaper.chosenColor->r, wallpaper.chosenColor->g, wallpaper.chosenColor->b};
+        Serial.write(current, 6);
+        if (read[0]) { //fade
+          bool redGreenBlue = wallpaper.mode == red or wallpaper.mode == green or wallpaper.mode == blue;
+          for (
+            int16_t i = wallpaper.brightness * !redGreenBlue + 255 * redGreenBlue;
+            i >= 0;
+            i -= (wallpaper.brightness / 17) * !redGreenBlue + 17 * redGreenBlue
+          ) {
+            FastLED.setBrightness(i); //won't work with show(i)
+            FastLED.show();
+            delay(40);
+          }
+        }
+        wallpaper.brightness = read[1];
+        wallpaper.mode = static_cast<Mode>(read[2]);
+        if (wallpaper.mode == white) {
+          wallpaper.blueLight = 5;
+        }
+        if (amount == 7) {
+          wallpaper.chosenColor->r = read[3];
+          wallpaper.chosenColor->g = read[4];
+          wallpaper.chosenColor->b = read[5];
+        }
+        /*Serial.print(wallpaper.brightness);
+        Serial.print(",");
+        Serial.print(wallpaper.mode);
+        Serial.print(",");
+        Serial.print(wallpaper.chosenColor->r);
+        Serial.print(",");
+        Serial.print(wallpaper.chosenColor->g);
+        Serial.print(",");
+        Serial.print(wallpaper.chosenColor->b);
+        Serial.println();*/
+        if (read[0]) { //fade
+          timeWallpaper = millis() - 30000;
+          resuming = 1;
+        } else {
+          wallpaper.setBrightness(false);
+          wallpaper.display(true, true, leds);
+        }
       }
     }
   }
