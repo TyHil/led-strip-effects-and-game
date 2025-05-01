@@ -195,7 +195,7 @@ void Game::shoot(CRGB leds[]) {
 void Game::deathCheck(CRGB leds[]) { //checks if any enemies are on top of the player
   for (uint8_t i = 0; i < enemyCount; i++) {
     if (player.pos == enemies[i].pos) {
-      firework->reset(player.pos, CRGB::Green, 200, true, true);
+      firework->reset(player.pos, CRGB::Green, 200, true, true, 150);
       firework->run(leds);
       player.death(enemyCount, leds);
       start(leds);
@@ -231,7 +231,7 @@ void Game::winCheck(CRGB leds[]) {
     enemyCount++;
     player.adjustShotLength(enemyCount);
     enemyReset();
-    firework->reset(NUM_LEDS - 1, CRGB::Blue, 200, true, true);
+    firework->reset(NUM_LEDS - 1, CRGB::Blue, 200, true, true, 150);
     firework->run(leds);
     displayLevel(leds);
     player.reset(enemyCount);

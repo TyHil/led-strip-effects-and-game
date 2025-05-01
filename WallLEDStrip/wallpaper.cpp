@@ -60,16 +60,16 @@ Mode operator--(Mode & mode, int) { //postfix operator
 
 /* Wallpaper */
 
-Wallpaper::Wallpaper(uint8_t setBrightness, Firework * setFirework) {
-  firework = setFirework;
+Wallpaper::Wallpaper(uint8_t setBrightness, Firework * setFirework1, Firework * setFirework2) {
+  firework1 = setFirework1;
+  firework2 = setFirework2;
   mode = rgb;
+  modeChange = false;
   brightness = setBrightness;
   blueLight = 10;
   color = 0;
   timeInput = 0;
-  timeRgb = 0;
-  timeStrobe = 0;
-  timeFirework = 0;
+  timeEffects = 0;
   chosenColor = new CRGB(136, 136, 136);
 }
 
@@ -116,6 +116,7 @@ void Wallpaper::left(CRGB leds[]) {
     timeInput = millis();
     if (mode == white) blueLight = max(blueLight - 1, 0);
     else mode--;
+    modeChange = true;
     setBrightness(false);
     display(true, true, leds);
   }
@@ -126,6 +127,7 @@ void Wallpaper::right(CRGB leds[]) {
     timeInput = millis();
     if (blueLight < 10) blueLight = min(blueLight + 1, 10);
     else mode++;
+    modeChange = true;
     setBrightness(false);
     display(true, true, leds);
   }
@@ -180,34 +182,42 @@ void Wallpaper::strobeEffect(bool show, CRGB leds[]) {
 }
 
 void Wallpaper::fireworkEffect(bool show, CRGB leds[]) {
-  if (millis() - timeFirework >= 250) { //reset
+  if (modeChange) { //reset
+    modeChange = false;
     for (uint16_t i = 0; i < NUM_LEDS; i++) leds[i] = CRGB::Black;
-    firework->reset(random(0, NUM_LEDS), chosenColor, random(10, 41), false, false, true);
+    firework1->reset(random(0, NUM_LEDS), chosenColor, random(10, 41), false, false, true, random(80, 130));
+    firework2->reset(random(0, NUM_LEDS), chosenColor, random(10, 41), false, false, true, random(80, 130));
   }
-  timeFirework = millis();
-  if (firework->move(leds)) firework->reset(random(0, NUM_LEDS), random(10, 41));
+  if (firework1->move(leds)) firework1->reset(random(0, NUM_LEDS), random(10, 41), random(80, 130));
+  if (firework2->move(leds)) firework2->reset(random(0, NUM_LEDS), random(10, 41), random(80, 130));
   if (show) FastLED.show();
 }
 
-void Wallpaper::effects(bool show, bool bypass, CRGB leds[]) {
+void Wallpaper::effects(bool show, CRGB leds[]) {
   if (mode == rgb) {
-    if (bypass or millis() - timeRgb >= 150) {
-      timeRgb = millis();
+    if (modeChange or millis() - timeEffects >= 150) {
+      timeEffects = millis();
+      modeChange = false;
       rgbEffect(show, leds);
     }
   } else if (mode == strobe) {
-    if (bypass or millis() - timeStrobe >= 300) {
-      timeStrobe = millis();
+    if (modeChange or millis() - timeEffects >= 300) {
+      timeEffects = millis();
+      modeChange = false;
       strobeEffect(show, leds);
     }
   } else if (mode == fireworks) {
-    if (bypass or millis() - timeFirework >= 20) fireworkEffect(show, leds);
+    if (modeChange or millis() - timeEffects >= 10) {
+      timeEffects = millis();
+      fireworkEffect(show, leds);
+    }
   }
 }
 
 void Wallpaper::display(bool show, bool bypass, CRGB leds[]) {
   fillDisplay(show, leds);
-  effects(show, bypass, leds);
+  if (bypass) modeChange = true;
+  effects(show, leds);
 }
 
 void Wallpaper::run(bool _up, bool _down, bool _left, bool _right, bool resuming, CRGB leds[]) {
@@ -215,8 +225,11 @@ void Wallpaper::run(bool _up, bool _down, bool _left, bool _right, bool resuming
   if (_down) down(false, leds);
   if (_left) left(leds);
   if (_right) right(leds);
-  if (resuming) fillDisplay(false, leds);
-  effects(!resuming, resuming, leds);
+  if (resuming) {
+    fillDisplay(false, leds);
+    modeChange = true;
+  }
+  effects(!resuming, leds);
   if (resuming) {
     bool redGreenBlue = mode == red or mode == green or mode == blue;
     for (int16_t i = (brightness / 17) * !redGreenBlue + 17 * redGreenBlue;

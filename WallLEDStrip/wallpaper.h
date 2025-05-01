@@ -15,13 +15,15 @@ enum Mode { white, rgb, strobe, red, green, blue, chosen, fireworks, NUM_MODES }
 class Wallpaper {
 public:
   Mode mode;
+  bool modeChange;
   uint8_t brightness;
   uint8_t blueLight;
   uint8_t color; //tracking for rgb and strobe progress
-  uint32_t timeInput, timeRgb, timeStrobe, timeFirework;
+  uint32_t timeInput, timeEffects;
   CRGB * chosenColor;
-  Firework * firework;
-  Wallpaper(uint8_t setBrightness, Firework * setFirework);
+  Firework * firework1;
+  Firework * firework2;
+  Wallpaper(uint8_t setBrightness, Firework * setFirework1, Firework * setFirework2);
   ~Wallpaper();
   void up(bool inGame, CRGB leds[]);
   void down(bool inGame, CRGB leds[]);
@@ -32,7 +34,7 @@ public:
   void rgbEffect(bool show, CRGB leds[]);
   void strobeEffect(bool show, CRGB leds[]);
   void fireworkEffect(bool show, CRGB leds[]);
-  void effects(bool show, bool bypass, CRGB leds[]);
+  void effects(bool show, CRGB leds[]);
   void display(bool show, bool bypass, CRGB leds[]);
   void run(bool _up, bool _down, bool _left, bool _right, bool resuming, CRGB leds[]);
 };

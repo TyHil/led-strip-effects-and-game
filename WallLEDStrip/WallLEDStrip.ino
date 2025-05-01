@@ -23,9 +23,10 @@ Input input;
 
 
 
-/* Shared Firework for memory */
+/* Shared Fireworks for memory */
 
-Firework * firework = new Firework(0, CRGB::Green, 200, true, true);
+Firework * firework = new Firework(0, CRGB::Green, 200, true, true, 150);
+Firework * firework2 = new Firework(0, CRGB::Green, 200, true, true, 150);
 
 
 
@@ -33,7 +34,7 @@ Firework * firework = new Firework(0, CRGB::Green, 200, true, true);
 
 int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 bool resuming = true; //wallpaper being resumed from game
-Wallpaper wallpaper = Wallpaper(51, firework);
+Wallpaper wallpaper = Wallpaper(51, firework, firework2);
 
 
 
@@ -59,7 +60,7 @@ void setup() {
   //Needed for RPI
   Serial.begin(9600); //Serial.println("");
   input = Input();
-  randomSeed(analogRead(12)); //better random
+  randomSeed(analogRead(7)); //better random
 }
 
 
@@ -76,7 +77,7 @@ void loop() {
       resuming = true;
 
     if (startingGame) { //new game
-      firework->reset(0, CRGB::Green, 200, true, true);
+      firework->reset(0, CRGB::Green, 200, true, true, 150);
       firework->run(leds);
       game.start(leds);
       startingGame = false;

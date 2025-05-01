@@ -11,7 +11,7 @@
 Spark::Spark() {}
 
 void Spark::reset(uint8_t power) {
-  offScreen = 0;
+  offScreen = false;
   slope = (float)random(-10 * power, 10 * power + 1) / 100.0;
 }
 
@@ -20,29 +20,29 @@ int16_t Spark::modOrNot(int16_t x, int16_t y, bool wrap) {
   return x;
 }
 
-void Spark::move(int16_t start, int16_t frame, CRGB::HTMLColorCode color, bool cover, bool fade, bool wrap, CRGB leds[]) {
-  if (offScreen) return;
-  if (!cover or frame < COVER_FADE)
-    leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NUM_LEDS, wrap)] = CRGB::Black;
-  int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NUM_LEDS, wrap);
+int16_t Spark::_move(int16_t start, uint8_t frame, uint8_t flags, CRGB leds[]) {
+  if (!(flags & FLAG_COVER) or frame < COVER_FADE)
+    leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NUM_LEDS, flags & FLAG_WRAP)] = CRGB::Black;
+  int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NUM_LEDS, flags & FLAG_WRAP);
   if (pos >= NUM_LEDS or pos < 0) {
-    offScreen = 1;
-    return;
+    offScreen = true;
   }
+  return pos;
+}
+
+void Spark::move(int16_t start, uint8_t frame, CRGB::HTMLColorCode color, uint8_t flags, CRGB leds[]) {
+  if (offScreen) return;
+  int16_t pos = _move(start, frame, flags, leds);
+  if (offScreen) return;
   leds[pos] = color;
 }
 
-void Spark::move(int16_t start, int16_t frame, CRGB * color, bool cover, bool fade, bool wrap, CRGB leds[]) {
+void Spark::move(int16_t start, uint8_t frame, CRGB * color, uint8_t flags, uint8_t maxFrames, CRGB leds[]) {
   if (offScreen) return;
-  if (!cover or frame < COVER_FADE)
-    leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NUM_LEDS, wrap)] = CRGB::Black;
-  int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NUM_LEDS, wrap);
-  if (pos >= NUM_LEDS or pos < 0) {
-    offScreen = 1;
-    return;
-  }
-  if (fade and frame >= COVER_FADE) {
-    float fadeAmount = ((float)(frame - COVER_FADE + 1) / (float)(MAX_FRAMES - COVER_FADE)) * -1.0 + 1;
+  int16_t pos = _move(start, frame, flags, leds);
+  if (offScreen) return;
+  if ((flags & FLAG_FADE) and frame >= COVER_FADE) {
+    float fadeAmount = ((float)(frame - COVER_FADE + 1) / (float)(maxFrames - COVER_FADE)) * -1.0 + 1;
     leds[pos]
       = CRGB((uint8_t)(color->r * fadeAmount), (uint8_t)(color->g * fadeAmount), (uint8_t)(color->b * fadeAmount));
   } else {
@@ -54,67 +54,56 @@ void Spark::move(int16_t start, int16_t frame, CRGB * color, bool cover, bool fa
 
 /* Firework */
 
-Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap) {
-  codeColor = setColor;
-  colorType = HTMLColorCode;
-  cover = setCover;
-  wrap = setWrap;
-  fade = false;
+Firework::Firework(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap, uint8_t setMaxFrames) {
   for (uint8_t i = 0; i < NUM_SPARKS; i++) sparks[i] = Spark();
-  reset(setPos, setPower);
+  reset(setPos, setColor, setPower, setCover, setWrap, setMaxFrames);
 }
 
-Firework::Firework(int16_t setPos, CRGB * setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade) {
-  constructorColor = setColor;
-  colorType = ObjectPointer;
-  cover = setCover;
-  wrap = setWrap;
-  fade = setFade;
+Firework::Firework(int16_t setPos, CRGB * setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade, uint8_t setMaxFrames) {
   for (uint8_t i = 0; i < NUM_SPARKS; i++) sparks[i] = Spark();
-  reset(setPos, setPower);
+  reset(setPos, setColor, setPower, setCover, setWrap, setFade, setMaxFrames);
 }
 
-void Firework::reset(int16_t setPos, uint8_t setPower) {
+void Firework::reset(int16_t setPos, uint8_t setPower, uint8_t setMaxFrames) {
   pos = setPos;
   power = setPower;
   frame = 0;
+  maxFrames = setMaxFrames;
   for (uint8_t i = 0; i < NUM_SPARKS; i++) sparks[i].reset(power);
 }
 
-void Firework::reset(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap) {
-  codeColor = setColor;
+void Firework::reset(int16_t setPos, CRGB::HTMLColorCode setColor, uint8_t setPower, bool setCover, bool setWrap, uint8_t setMaxFrames) {
+  color.codeColor = setColor;
   colorType = HTMLColorCode;
-  cover = setCover;
-  wrap = setWrap;
-  fade = false;
-  reset(setPos, setPower);
+  flags = 0;
+  if (setCover) flags |= FLAG_COVER;
+  if (setWrap) flags |= FLAG_WRAP;
+  reset(setPos, setPower, setMaxFrames);
 }
 
-void Firework::reset(int16_t setPos, CRGB * setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade) {
-  constructorColor = setColor;
+void Firework::reset(int16_t setPos, CRGB * setColor, uint8_t setPower, bool setCover, bool setWrap, bool setFade, uint8_t setMaxFrames) {
+  color.constructorColor = setColor;
   colorType = ObjectPointer;
-  cover = setCover;
-  wrap = setWrap;
-  fade = setFade;
-  reset(setPos, setPower);
+  flags = 0;
+  if (setCover) flags |= FLAG_COVER;
+  if (setWrap) flags |= FLAG_WRAP;
+  if (setFade) flags |= FLAG_FADE;
+  reset(setPos, setPower, setMaxFrames);
 }
 
 bool Firework::move(CRGB leds[]) {
   uint8_t sparksOffScreen = 0;
   for (uint8_t i = 0; i < NUM_SPARKS; i++)
     if (colorType == ObjectPointer)
-      sparks[i].move(pos, frame, constructorColor, cover, fade, wrap, leds);
-    else sparks[i].move(pos, frame, codeColor, cover, fade, wrap, leds);
+      sparks[i].move(pos, frame, color.constructorColor, flags, maxFrames, leds);
+    else sparks[i].move(pos, frame, color.codeColor, flags, leds);
   frame++;
-  return frame >= MAX_FRAMES;
+  return frame >= maxFrames;
 }
 
 void Firework::run(CRGB leds[]) {
-  for (frame = 0; frame < MAX_FRAMES; frame++) {
-    for (int i = 0; i < NUM_SPARKS; i++)
-      if (colorType == ObjectPointer)
-        sparks[i].move(pos, frame, constructorColor, cover, fade, wrap, leds);
-      else sparks[i].move(pos, frame, codeColor, cover, fade, wrap, leds);
+  for (frame = 0; frame < maxFrames;) {
+    move(leds);
     FastLED.show();
     delay(20);
   }
