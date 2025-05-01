@@ -20,27 +20,27 @@ int16_t Spark::modOrNot(int16_t x, int16_t y, bool wrap) {
   return x;
 }
 
-int16_t Spark::_move(int16_t start, uint8_t frame, uint8_t flags, CRGB leds[]) {
-  if (!(flags & FLAG_COVER) or frame < COVER_FADE)
+int16_t Spark::_move(int16_t start, uint8_t frame, uint8_t flags, uint8_t maxFrames, CRGB leds[]) {
+  if (!(flags & FLAG_COVER) or frame < maxFrames / 2)
     leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NUM_LEDS, flags & FLAG_WRAP)] = CRGB::Black;
   int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NUM_LEDS, flags & FLAG_WRAP);
   if (pos >= NUM_LEDS or pos < 0) offScreen = true;
   return pos;
 }
 
-void Spark::move(int16_t start, uint8_t frame, CRGB::HTMLColorCode color, uint8_t flags, CRGB leds[]) {
+void Spark::move(int16_t start, uint8_t frame, CRGB::HTMLColorCode color, uint8_t flags, uint8_t maxFrames, CRGB leds[]) {
   if (offScreen) return;
-  int16_t pos = _move(start, frame, flags, leds);
+  int16_t pos = _move(start, frame, flags, maxFrames, leds);
   if (offScreen) return;
   leds[pos] = color;
 }
 
 void Spark::move(int16_t start, uint8_t frame, CRGB * color, uint8_t flags, uint8_t maxFrames, CRGB leds[]) {
   if (offScreen) return;
-  int16_t pos = _move(start, frame, flags, leds);
+  int16_t pos = _move(start, frame, flags, maxFrames, leds);
   if (offScreen) return;
-  if ((flags & FLAG_FADE) and frame >= COVER_FADE) {
-    float fadeAmount = ((float)(frame - COVER_FADE + 1) / (float)(maxFrames - COVER_FADE)) * -1.0 + 1;
+  if ((flags & FLAG_FADE) and frame >= maxFrames / 2) {
+    float fadeAmount = ((float)(frame - maxFrames / 2 + 1) / (float)(maxFrames - maxFrames / 2)) * -1.0 + 1;
     leds[pos]
       = CRGB((uint8_t)(color->r * fadeAmount), (uint8_t)(color->g * fadeAmount), (uint8_t)(color->b * fadeAmount));
   } else {
@@ -94,7 +94,7 @@ bool Firework::move(CRGB leds[]) {
   for (uint8_t i = 0; i < NUM_SPARKS; i++)
     if (colorType == ObjectPointer)
       sparks[i].move(pos, frame, color.constructorColor, flags, maxFrames, leds);
-    else sparks[i].move(pos, frame, color.codeColor, flags, leds);
+    else sparks[i].move(pos, frame, color.codeColor, flags, maxFrames, leds);
   frame++;
   return frame >= maxFrames;
 }

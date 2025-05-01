@@ -8,7 +8,6 @@
 #define NUM_LEDS 300
 
 #define NUM_SPARKS 50
-#define COVER_FADE 80
 
 #define FLAG_COVER 0x01
 #define FLAG_WRAP 0x02
@@ -21,8 +20,8 @@ public:
   Spark();
   int16_t modOrNot(int16_t x, int16_t y, bool wrap);
   void reset(uint8_t power);
-  int16_t _move(int16_t start, uint8_t frame, uint8_t flags, CRGB leds[]);
-  void move(int16_t start, uint8_t frame, CRGB::HTMLColorCode color, uint8_t flags, CRGB leds[]);
+  int16_t _move(int16_t start, uint8_t frame, uint8_t flags, uint8_t maxFrames, CRGB leds[]);
+  void move(int16_t start, uint8_t frame, CRGB::HTMLColorCode color, uint8_t flags, uint8_t maxFrames, CRGB leds[]);
   void move(int16_t start, uint8_t frame, CRGB * color, uint8_t flags, uint8_t maxFrames, CRGB leds[]);
 };
 
