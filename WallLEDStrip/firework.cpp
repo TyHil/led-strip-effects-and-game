@@ -24,9 +24,7 @@ int16_t Spark::_move(int16_t start, uint8_t frame, uint8_t flags, CRGB leds[]) {
   if (!(flags & FLAG_COVER) or frame < COVER_FADE)
     leds[modOrNot((int16_t)(start + slope * pow(frame - 1, 0.6)), NUM_LEDS, flags & FLAG_WRAP)] = CRGB::Black;
   int16_t pos = modOrNot((int16_t)(start + slope * pow(frame, 0.6)), NUM_LEDS, flags & FLAG_WRAP);
-  if (pos >= NUM_LEDS or pos < 0) {
-    offScreen = true;
-  }
+  if (pos >= NUM_LEDS or pos < 0) offScreen = true;
   return pos;
 }
 
