@@ -32,6 +32,10 @@ int16_t mod(int16_t x, int16_t y) {
   return x < 0 ? ((x + 1) % y) + y - 1 : x % y;
 }
 
+uint8_t brightnessCurve(uint8_t brightness) {
+  return round(1.0 / 255 * pow(brightness, 2));
+}
+
 
 
 /* Mode */
@@ -134,7 +138,8 @@ void Wallpaper::right(CRGB leds[]) {
 }
 
 void Wallpaper::setBrightness(bool inGame) {
-  if (inGame or (mode != red and mode != green and mode != blue)) FastLED.setBrightness(brightness);
+  if (inGame or (mode != red and mode != green and mode != blue))
+    FastLED.setBrightness(brightnessCurve(brightness));
   else FastLED.setBrightness(255);
 }
 
@@ -235,7 +240,7 @@ void Wallpaper::run(bool _up, bool _down, bool _left, bool _right, bool resuming
     for (int16_t i = (brightness / 17) * !redGreenBlue + 17 * redGreenBlue;
          i <= brightness * !redGreenBlue + 255 * redGreenBlue;
          i += (brightness / 17) * !redGreenBlue + 17 * redGreenBlue) {
-      FastLED.setBrightness(i); //won't work with show(i)
+      FastLED.setBrightness(brightnessCurve(i)); //won't work with show(i)
       FastLED.show();
       delay(40);
     }

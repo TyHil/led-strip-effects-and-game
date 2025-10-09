@@ -34,7 +34,7 @@ Firework * firework2 = new Firework(0, CRGB::Green, 200, true, true, 150);
 
 int32_t timeWallpaper = -30000; //inactive time before wallpaper is resumed
 bool resuming = true; //wallpaper being resumed from game
-Wallpaper wallpaper = Wallpaper(51, firework, firework2);
+Wallpaper wallpaper = Wallpaper(119, firework, firework2);
 
 
 
@@ -129,7 +129,7 @@ void loop() {
           bool redGreenBlue = wallpaper.mode == red or wallpaper.mode == green or wallpaper.mode == blue;
           for (int16_t i = wallpaper.brightness * !redGreenBlue + 255 * redGreenBlue; i >= 0;
                i -= (wallpaper.brightness / 17) * !redGreenBlue + 17 * redGreenBlue) {
-            FastLED.setBrightness(i); //won't work with show(i)
+            FastLED.setBrightness(brightnessCurve(i)); //won't work with show(i)
             FastLED.show();
             delay(40);
           }

@@ -10,6 +10,8 @@
 #define RGB_START_LED 146 //0 to (NUM_LEDS - 1)
 #define RGB_END_LED 299 //0 to (NUM_LEDS - 1)
 
+uint8_t brightnessCurve(uint8_t brightness);
+
 enum Mode { white, rgb, strobe, red, green, blue, chosen, fireworks, NUM_MODES };
 
 class Wallpaper {
